@@ -16,13 +16,14 @@ def show_state():
     return render_template("status.html", numbList=numbList)
 
 
-@app.route("/add", methods = ["POST"])
+@app.route("/add", methods = ["GET", "POST"])
 def addition():
     global b
     b += 1
     numbList.append(b)
     print(f"List status:{numbList}")
-    return f"List status: {numbList}"
+    #return f"List status: {numbList}"
+    return render_template("addition.html", numbList=numbList)
 
 
 @app.route("/del", methods = ["DELETE"])
