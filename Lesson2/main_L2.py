@@ -24,7 +24,12 @@ def addition():
 
 
 @app.route("/del")
-def addition():
+def delete():
+    print(len(numbList))
+    if len(numbList) >= 1:
+        numbList.pop()
+    return f"List status: {numbList}"
+
 
 
 if __name__ == '__main__':
