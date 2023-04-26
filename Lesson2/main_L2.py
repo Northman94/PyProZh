@@ -30,7 +30,9 @@ def delete():
     if len(numbList) >= 1:
         numbList.pop()
     #return f"List status: {numbList}"
-    return render_template("delete.html", delList=numbList)
+        return render_template("delete.html", delList=numbList)
+    else:
+        return render_template("status.html", numbList=numbList)
 
 
 if __name__ == '__main__':
