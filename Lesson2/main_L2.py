@@ -1,7 +1,5 @@
-import os
 
-from flask import Flask, render_template, request, url_for, redirect
-from markupsafe import escape
+from flask import Flask, render_template
 app = Flask(__name__)
 
 numbList = []
@@ -23,16 +21,16 @@ def addition():
     numbList.append(b)
     print(f"List status:{numbList}")
     #return f"List status: {numbList}"
-    return render_template("addition.html", numbList=numbList)
+    return render_template("addition.html", addList=numbList)
 
 
-@app.route("/del", methods = ["DELETE"])
+@app.route("/del", methods = ["GET","DELETE"])
 def delete():
     print(len(numbList))
     if len(numbList) >= 1:
         numbList.pop()
-    return f"List status: {numbList}"
-
+    #return f"List status: {numbList}"
+    return render_template("delete.html", delList=numbList)
 
 
 if __name__ == '__main__':
