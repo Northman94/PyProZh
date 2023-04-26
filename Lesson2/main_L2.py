@@ -1,20 +1,22 @@
+import os
 
-from flask import Flask, render_template
+from flask import Flask, render_template, request, url_for, redirect
 from markupsafe import escape
 app = Flask(__name__)
 
 numbList = []
 b = 0
 
+
 @app.route("/")
-@app.route("/status")
+@app.route("/status", methods = ["GET"])
 def show_state():
     print(f"List status:{numbList}")
-    return f"List status: {numbList}"
-    #return render_template("status.html", ABC=numbList)
+    #return f"List status: {numbList}"
+    return render_template("status.html", numbList=numbList)
 
 
-@app.route("/add")
+@app.route("/add", methods = ["POST"])
 def addition():
     global b
     b += 1
@@ -23,7 +25,7 @@ def addition():
     return f"List status: {numbList}"
 
 
-@app.route("/del")
+@app.route("/del", methods = ["DELETE"])
 def delete():
     print(len(numbList))
     if len(numbList) >= 1:
