@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, redirect, url_for
+from flask import Flask, request, render_template, redirect, url_for, Response
 from flask_wtf import FlaskForm, CSRFProtect
 from wtforms import StringField, SubmitField, RadioField
 from wtforms.validators import DataRequired, Length, InputRequired
@@ -6,10 +6,11 @@ from random import randint
 
 app = Flask(__name__)
 csrf = CSRFProtect(app)
-app.config['SECRET_KEY'] = 'secret_key'
+# Hide this in proper way:
+app.config['SECRET_KEY'] = 'P?n$NqIRVWOGtO$&!|0wkatmvVia'
 
 class User():
-    def __init__(self, name='', language='', house='', magic_item_level=0):
+    def __init__(self, name='', language='', house='', magic_item_level=''):
         self.name = name
         self.language = language
         self.house = house
@@ -23,34 +24,68 @@ class User():
         else:
             self.magic_item_level = 'High'
 
-class MyForm(FlaskForm):
-    name = StringField('Enter your Name?', validators=[DataRequired(), Length(4, 30)])
+
+
+class NameAndLanguageForm(FlaskForm):
+    name = StringField('Enter your Name?', validators=[DataRequired(), Length(3, 30)])
     language = StringField('What is your Language?', validators=[DataRequired(), Length(3, 30)])
+    submit = SubmitField('Next')
+
+class HogwartsHouseForm(FlaskForm):
     category = RadioField('Choose your Hogwarts House:', validators=[InputRequired(message=None)],
-            choices=[('griffindor', 'Griffindor'),
-                        ('ravenclaw', 'Ravenclaw'),
-                        ('hufflepuff', 'Hufflepuff'),
-                        ('slytherin', 'Slytherin')])
-    submit = SubmitField('Submit')
+            choices=[('Griffindor', 'Griffindor'),
+                    ('Ravenclaw', 'Ravenclaw'),
+                    ('Hufflepuff', 'Hufflepuff'),
+                    ('Slytherin', 'Slytherin')])
+    submit = SubmitField('Next')
+
+class MagicItemForm(FlaskForm):
+    submit = SubmitField('Get Your Magic Item')
+
+
 
 @app.route("/", methods=["GET", "POST"])
-def show_items():
-    form = MyForm()
+def name_and_language():
+    form = NameAndLanguageForm()
 
-    if request.method == 'POST' and form.validate_on_submit():
+    if form.validate_on_submit():
         name = form.name.data
         language = form.language.data
+        return redirect(url_for('hogwarts_house', name=name, language=language))
+
+    return render_template('name_and_language.html', form=form)
+
+@app.route("/hogwarts_house", methods=["GET", "POST"])
+def hogwarts_house():
+    name = request.args.get('name')
+    language = request.args.get('language')
+    form = HogwartsHouseForm()
+
+    if form.validate_on_submit():
         house = form.category.data
-
-        # create a new User object using the form data
         user = User(name, language, house)
+        return redirect(url_for('magic_item', name=name, language=language, house=house))
 
-        # set a random magic item level
-        magic_item_level = randint(1, 10)
-        user.get_grade(magic_item_level)
+    return render_template('hogwarts_house.html', form=form)
 
-        # display the user's information
-        return f"""
+@app.route("/magic_item", methods=["GET", "POST"])
+def magic_item():
+    name = request.args.get('name')
+    language = request.args.get('language')
+    house = request.args.get('house')
+    form = MagicItemForm()
+
+
+    # Create a new User object using the form data
+    user = User(name, language, house)
+
+    # Set a random magic item level
+    magic_item_level = randint(1, 10)
+
+    user.get_grade(magic_item_level)
+
+    # Display the user's info & suggest to Return:
+    return  f"""
             <h3>Character Info:</h3>
             <ul>
                 <li>Name: {user.name}</li>
@@ -60,5 +95,3 @@ def show_items():
             </ul>
             <a href="/">Return to the HOME page</a>
         """
-
-    return render_template('player.html', form=form)

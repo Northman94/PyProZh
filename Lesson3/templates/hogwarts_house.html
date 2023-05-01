@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Hogwarts House Form</title>
+  </head>
+  <body>
+    <h2>Choose your Hogwarts House</h2>
+    <form method="POST">
+      {{ form.csrf_token }}
+      {% for choice in form.category %}
+      <p>
+        {{ choice.label }} {{ choice }}
+      </p>
+      {% endfor %}
+      <p>{{ form.submit() }}</p>
+    </form>
+  </body>
+</html>
