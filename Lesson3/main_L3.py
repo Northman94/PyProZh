@@ -1,18 +1,20 @@
-from flask import Flask, request, render_template, redirect, url_for, Response
+from flask import Flask, request, render_template, redirect, url_for
 from flask_wtf import FlaskForm, CSRFProtect
 from wtforms import StringField, SubmitField, RadioField
 from wtforms.validators import DataRequired, Length, InputRequired
 from random import randint
+from secret_key import SECRET_KEY
 
 app = Flask(__name__)
 csrf = CSRFProtect(app)
-# Hide this in proper way:
-app.config['SECRET_KEY'] = 'P?n$NqIRVWOGtO$&!|0wkatmvVia'
+
+app.config['SECRET_KEY'] = SECRET_KEY
+
 
 class User():
     def __init__(self, name='', language='', house='', magic_item_level=''):
-        self.name = name
-        self.language = language
+        self.name = ascii(name)
+        self.language = ascii(language)
         self.house = house
         self.magic_item_level = magic_item_level
 
@@ -83,7 +85,7 @@ def magic_item():
     # Check on page skipping:
     if not name or not language:
         return redirect(url_for(('name_and_language')))
-    elif house is None:
+    elif not house:
         return redirect(url_for(('hogwarts_house')))
 
     # Create a new User object using the form data
@@ -104,5 +106,3 @@ def magic_item():
             </ul>
             <a href="/">Return to the HOME page</a>
         """
-
-
