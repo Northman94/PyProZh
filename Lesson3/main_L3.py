@@ -37,6 +37,7 @@ class HogwartsHouseForm(FlaskForm):
                     ('Ravenclaw', 'Ravenclaw'),
                     ('Hufflepuff', 'Hufflepuff'),
                     ('Slytherin', 'Slytherin')])
+
     submit = SubmitField('Next')
 
 class MagicItemForm(FlaskForm):
@@ -61,6 +62,10 @@ def hogwarts_house():
     language = request.args.get('language')
     form = HogwartsHouseForm()
 
+    # Check on page skipping:
+    if not name or not language:
+        return redirect(url_for(('name_and_language')))
+
     if form.validate_on_submit():
         house = form.category.data
         user = User(name, language, house)
@@ -75,13 +80,17 @@ def magic_item():
     house = request.args.get('house')
     form = MagicItemForm()
 
+    # Check on page skipping:
+    if not name or not language:
+        return redirect(url_for(('name_and_language')))
+    elif house is None:
+        return redirect(url_for(('hogwarts_house')))
 
     # Create a new User object using the form data
     user = User(name, language, house)
 
     # Set a random magic item level
     magic_item_level = randint(1, 10)
-
     user.get_grade(magic_item_level)
 
     # Display the user's info & suggest to Return:
@@ -95,3 +104,5 @@ def magic_item():
             </ul>
             <a href="/">Return to the HOME page</a>
         """
+
+
