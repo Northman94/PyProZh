@@ -13,10 +13,17 @@ app.config['SECRET_KEY'] = SECRET_KEY
 
 class User():
     def __init__(self, name='', language='', house='', magic_item_level=''):
-        self.name = ascii(name)
-        self.language = ascii(language)
+        self.name = self.check_ascii(name)
+        self.language = self.check_ascii(language)
         self.house = house
         self.magic_item_level = magic_item_level
+
+    def check_ascii(self, param):
+        #check if str
+        if param.isascii():
+            return param
+        return Exception("String is not ASCII")
+
 
     def get_grade(self, level):
         if level < 4:
@@ -64,6 +71,7 @@ def hogwarts_house():
     language = request.args.get('language')
     form = HogwartsHouseForm()
 
+
     # Check on page skipping:
     if not name or not language:
         return redirect(url_for(('name_and_language')))
@@ -81,6 +89,7 @@ def magic_item():
     language = request.args.get('language')
     house = request.args.get('house')
     form = MagicItemForm()
+
 
     # Check on page skipping:
     if not name or not language:
