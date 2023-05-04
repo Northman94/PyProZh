@@ -13,16 +13,18 @@ app.config['SECRET_KEY'] = SECRET_KEY
 
 class User():
     def __init__(self, name='', language='', house='', magic_item_level=''):
-        self.name = self.check_ascii(name)
-        self.language = self.check_ascii(language)
+        self.name = self.check_input(name)
+        self.language = self.check_input(language)
         self.house = house
         self.magic_item_level = magic_item_level
 
-    def check_ascii(self, param):
-        #check if str
-        if param.isascii():
-            return param
-        return Exception("String is not ASCII")
+    def check_input(self, param):
+        # check if str
+        if not isinstance(param, str):
+            raise ValueError("Parameter is not a string")
+        elif not param.isascii():
+            raise Exception("String is not ASCII")
+        return param
 
 
     def get_grade(self, level):
