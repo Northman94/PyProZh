@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, redirect, url_for
+from flask import Flask, request, render_template, redirect, url_for, session
 from flask_wtf import FlaskForm, CSRFProtect
 from wtforms import StringField, SubmitField, RadioField
 from wtforms.validators import DataRequired, Length, InputRequired
@@ -10,8 +10,14 @@ csrf = CSRFProtect(app)
 
 app.config['SECRET_KEY'] = SECRET_KEY
 
+user = None
 
 class User():
+    name = ""
+    language = ""
+    house = ""
+    magic_item_level = ""
+
     def __init__(self, name='', language='', house='', magic_item_level=''):
         self.name = self.check_input(name)
         self.language = self.check_input(language)
@@ -21,11 +27,10 @@ class User():
     def check_input(self, param):
         # check if str
         if not isinstance(param, str):
-            raise ValueError("Parameter is not a string")
+            return ValueError("Parameter is not a string")
         elif not param.isascii():
-            raise Exception("String is not ASCII")
+            return Exception("String is not ASCII")
         return param
-
 
     def get_grade(self, level):
         if level < 4:
@@ -48,7 +53,6 @@ class HogwartsHouseForm(FlaskForm):
                     ('Ravenclaw', 'Ravenclaw'),
                     ('Hufflepuff', 'Hufflepuff'),
                     ('Slytherin', 'Slytherin')])
-
     submit = SubmitField('Next')
 
 class MagicItemForm(FlaskForm):
@@ -61,59 +65,62 @@ def name_and_language():
     form = NameAndLanguageForm()
 
     if form.validate_on_submit():
-        name = form.name.data
-        language = form.language.data
-        return redirect(url_for('hogwarts_house', name=name, language=language))
+        global user
+        user = User(form.name.data, form.language.data) #+
 
+        return redirect(url_for('hogwarts_house'))
     return render_template('name_and_language.html', form=form)
+
 
 @app.route("/hogwarts_house", methods=["GET", "POST"])
 def hogwarts_house():
-    name = request.args.get('name')
-    language = request.args.get('language')
     form = HogwartsHouseForm()
 
-
-    # Check on page skipping:
-    if not name or not language:
-        return redirect(url_for(('name_and_language')))
+    # Get the User instance from the request args
+    global user
 
     if form.validate_on_submit():
-        house = form.category.data
-        user = User(name, language, house)
-        return redirect(url_for('magic_item', name=name, language=language, house=house))
+        user = request.form.get("user")
+        # Update the User instance with the selected house
+        #house = form.category.data
+        house = request.form.get("category") #POST #+
 
+        """
+        # Check on page skipping:
+        if not user.name or not user.language:
+            return redirect(url_for(('name_and_language')))
+        """
+
+        return redirect(url_for('magic_item'))
     return render_template('hogwarts_house.html', form=form)
+
 
 @app.route("/magic_item", methods=["GET", "POST"])
 def magic_item():
-    name = request.args.get('name')
-    language = request.args.get('language')
-    house = request.args.get('house')
     form = MagicItemForm()
 
+    # Get the User instance from the request args
+    global user
+    user = request.args.get('user')
 
-    # Check on page skipping:
-    if not name or not language:
-        return redirect(url_for(('name_and_language')))
-    elif not house:
-        return redirect(url_for(('hogwarts_house')))
+    print(f"3!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+    if form.validate_on_submit():
+        print(f"4!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+        # Set a random magic item level
+        magic_item_level = randint(1, 10)
+        user.get_grade(magic_item_level)
+        print(f"5!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 
-    # Create a new User object using the form data
-    user = User(name, language, house)
-
-    # Set a random magic item level
-    magic_item_level = randint(1, 10)
-    user.get_grade(magic_item_level)
-
-    # Display the user's info & suggest to Return:
-    return  f"""
-            <h3>Character Info:</h3>
-            <ul>
-                <li>Name: {user.name}</li>
-                <li>Language: {user.language}</li>
-                <li>House: {user.house}</li>
-                <li>Magic Item Level: {user.magic_item_level}</li>
-            </ul>
-            <a href="/">Return to the HOME page</a>
-        """
+        print(f"6 {user.magic_item_level}")
+        print(f"7!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+        # Display the user's info & suggest to Return:
+        return  f"""
+                <h3>Character Info:</h3>
+                <ul>
+                    <li>Name: {user.name}</li>
+                    <li>Language: {user.language}</li>
+                    <li>House: {user.house}</li>
+                    <li>Magic Item Level: {user.magic_item_level}</li>
+                </ul>
+                <a href="/">Return to the HOME page</a>
+            """
