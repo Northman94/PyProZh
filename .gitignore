@@ -159,3 +159,5 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
+/Lesson4/secret_key_L4.txt
+/Lesson4/secret_key_L4.py

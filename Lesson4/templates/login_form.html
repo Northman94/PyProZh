@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Login Form</title>
+  </head>
+  <body>
+    <h2>Enter your existing Nickname and Password</h2>
+    <form method="POST">
+      {{ form.csrf_token }}
+      <p>
+        {{ form.nickname.label }}
+        <br>
+        {{ form.nickname(size=30) }}
+      </p>
+
+      <p>
+        {{ form.password.label }}
+        <br>
+        {{ form.password(size=30) }}
+      </p>
+
+      <p>{{ form.submit() }}</p>
+      <br>
+      <p>{{ form.register() }}</p>
+    </form>
+  </body>
+</html>

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Register Form</title>
+  </head>
+  <body>
+    <h2>Enter your new Nickname and Password</h2>
+    <form method="POST">
+      {{ form.csrf_token }}
+      <p>
+        {{ form.nickname.label }}
+        <br>
+        {{ form.nickname(size=30) }}
+      </p>
+      <p>
+        {{ form.password.label }}
+        <br>
+        {{ form.password(size=30) }}
+      </p>
+      <p>{{ form.submit() }}</p>
+    </form>
+  </body>
+</html>
