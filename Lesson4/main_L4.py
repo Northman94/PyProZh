@@ -1,10 +1,11 @@
-
 from flask import Flask, request, render_template, redirect, url_for
 from flask_wtf import FlaskForm, CSRFProtect
 from wtforms import StringField, SubmitField, RadioField
 from wtforms.validators import DataRequired, Length, InputRequired
-from random import randint
 from secret_key_L4 import SECRET_KEY
+from random import randint
+import sqlite3
+import sqlite_manager_L4
 
 app = Flask(__name__)
 csrf = CSRFProtect(app)
@@ -68,14 +69,22 @@ class MagicItemForm(FlaskForm):
 @app.route("/", methods=["GET", "POST"])
 @app.route("/login", methods=["GET", "POST"])
 def login():
+    # Create table
+    sqlite_manager_L4.create_table()
     l_form = LoginForm()
 
     if l_form.validate_on_submit():
         user.name = l_form.nickname.data
         user.password = l_form.password.data
         # rethink if this should be here ^
-        if l_form.submit.data:
+
+        if sqlite_manager_L4.get_user_info(user.name, user.password):
             pass
+
+        if l_form.submit.data:
+            #if sqlite_manager_L4.get_user_info(user.name, user.password):
+                pass
+
             # if user present in DB - show last page
             #  elif not - Show Error. Suggest Register or try again
         elif l_form.register.data:
@@ -143,3 +152,11 @@ def magic_item():
             </ul>
             <a href="/">Return to the HOME page</a>
         """
+
+
+if __name__ == "__main__":
+    try:
+        conn = sqlite3.connect("user_L4.db")
+    finally:
+        conn.close()
+    app.run(host='0.0.0.0', port='8000', debug=True)
