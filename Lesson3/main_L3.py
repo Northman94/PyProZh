@@ -3,7 +3,7 @@ from flask_wtf import FlaskForm, CSRFProtect
 from wtforms import StringField, SubmitField, RadioField
 from wtforms.validators import DataRequired, Length, InputRequired
 from random import randint
-from secret_key import SECRET_KEY
+from secret_key_L3 import SECRET_KEY
 
 app = Flask(__name__)
 csrf = CSRFProtect(app)
