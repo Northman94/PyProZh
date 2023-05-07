@@ -46,6 +46,7 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Submit')
     register = SubmitField('Register new User')
 
+
 class RegisterForm(FlaskForm):
     nickname = StringField('Enter your Login.', validators=[DataRequired(), Length(3, 30)])
     password = StringField('Enter Password.', validators=[DataRequired(), Length(3, 30)])
@@ -66,10 +67,14 @@ class MagicItemForm(FlaskForm):
     submit = SubmitField('Get Your Magic Item')
 
 
+usr_present = None
+
+
 @app.route("/", methods=["GET", "POST"])
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    availability = None
+    get_all_info = False
+
     l_form = LoginForm()
     # Create table
     sqlite_manager_L4.create_table()
@@ -77,27 +82,27 @@ def login():
     if l_form.validate_on_submit():
         user.name = l_form.nickname.data
         user.password = l_form.password.data
-        # rethink if this should be here ^
 
         # Check DB
-        usr_present = sqlite_manager_L4.get_user_info(user.name)
+        global usr_present
+        usr_present = sqlite_manager_L4.get_user_info(user.name, user.password, get_all_info)
         print(f"User Present: {usr_present}")
 
-        # 2 variation to Leave Page:
         if l_form.submit.data:
             if usr_present:
                 return redirect(url_for('magic_item'))
             else:
-                raise Exception("User is absent. Try to Register.")
+                raise Exception("User is absent. Try to Register.")  # +
 
         elif l_form.register.data:
             if usr_present:
-                #!!!!! User breach. No Password check
+                # Treat Existing user as login
                 return redirect(url_for('magic_item'))
             else:
                 return redirect(url_for('register'))
 
     return render_template('login_form.html', form=l_form)
+
 
 @app.route("/registration", methods=["GET", "POST"])
 def register():
@@ -108,6 +113,7 @@ def register():
         user.password = r_form.password.data
 
         # User that differs from /login but present in DB check:
+        global usr_present
         usr_present = sqlite_manager_L4.get_user_info(user.name)
         print(f"User Present: {usr_present}")
 
@@ -135,6 +141,9 @@ def hogwarts_house():
 
 @app.route("/item", methods=["GET", "POST"])
 def magic_item():
+    global usr_present
+    get_all_info = True
+
     m_form = MagicItemForm()
 
     # Check on page skipping:
@@ -143,6 +152,22 @@ def magic_item():
     # Set a random magic item level
     magic_item_level = randint(1, 10)
     user.get_grade(magic_item_level)
+
+
+
+    if usr_present:
+        # Get User from DB
+        db_content = sqlite_manager_L4.get_user_info(user.nickname, user.password, get_all_info)
+        print('6!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+        print(db_content)
+        user.nickname = db_content[0]
+        user.password = db_content [1]
+        user.house = db_content[2]
+        user.magic_item_level = db_content[3]
+
+    else:
+        # Put new User in DB
+        sqlite_manager_L4.put_user_info(user.nickname, user.password, user.house, user.magic_item_level)
 
     # Display the user's info & suggest to Return:
     return f"""

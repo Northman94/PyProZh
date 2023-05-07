@@ -1,4 +1,3 @@
-
 import sqlite3
 
 
@@ -25,39 +24,53 @@ def create_table():
         conn.close()
 
 
-def get_user_info(nick):
+def get_user_info(nick, password, get_all_info):
     try:
         conn = sqlite3.connect("user_L4.db")
         cur = conn.cursor()
 
         sql = """
-            SELECT nickname FROM users;  
+            SELECT nickname, password, house, magic_item_level FROM users;  
         """
 
         res = cur.execute(sql)
-        print('1!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
         db_content = res.fetchall()
-        print(db_content)
-        print('2!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
-        print(nick)
 
-        for usr in db_content:
-            print(f"Check: {usr}")
-            if usr[0] == nick:
-                return True
-            else:
-                return False
+        if get_all_info:
+            for usr in db_content:
+                print(usr)
+                print(f"5!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                print(usr[0])
+                print(nick)
+                #if usr[0] == nick:
+                return usr
+
+        else:
+            for usr in db_content:
+                print(f"Part: {usr}")
+                if usr[0] == nick and usr[1] == password:
+                    return True
+                else:
+                    return False
 
     finally:
         conn.close()
 
 
+def put_user_info(nickname, password, house, magic_item):
+    try:
+        conn = sqlite3.connect("user_L4.db")
+        cur = conn.cursor()
 
+        sql = """
+        INSERT INTO users (nickname, password, house, magic_item_level)
+        VALUES('{}', '{}', '{}', {});
+        """.format(nickname, password, house, magic_item)
 
-def put_user_info():
+        res = cur.execute(sql)
 
-    sql = """
-    INSERT INTO users VALUES()
-    """
+        db_content = res.fetchall()
+        print(db_content)
 
-    pass
+    finally:
+        conn.close()
