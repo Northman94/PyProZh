@@ -69,26 +69,33 @@ class MagicItemForm(FlaskForm):
 @app.route("/", methods=["GET", "POST"])
 @app.route("/login", methods=["GET", "POST"])
 def login():
+    availability = None
+    l_form = LoginForm()
     # Create table
     sqlite_manager_L4.create_table()
-    l_form = LoginForm()
 
     if l_form.validate_on_submit():
         user.name = l_form.nickname.data
         user.password = l_form.password.data
         # rethink if this should be here ^
 
-        if sqlite_manager_L4.get_user_info(user.name, user.password):
-            pass
+        # Check DB
+        usr_present = sqlite_manager_L4.get_user_info(user.name)
+        print(f"User Present: {usr_present}")
 
+        # 2 variation to Leave Page:
         if l_form.submit.data:
-            #if sqlite_manager_L4.get_user_info(user.name, user.password):
-                pass
+            if usr_present:
+                return redirect(url_for('magic_item'))
+            else:
+                raise Exception("User is absent. Try to Register.")
 
-            # if user present in DB - show last page
-            #  elif not - Show Error. Suggest Register or try again
         elif l_form.register.data:
-            return redirect(url_for('registration'))
+            if usr_present:
+                #!!!!! User breach. No Password check
+                return redirect(url_for('magic_item'))
+            else:
+                return redirect(url_for('register'))
 
     return render_template('login_form.html', form=l_form)
 
@@ -99,43 +106,39 @@ def register():
     if r_form.validate_on_submit():
         user.name = r_form.nickname.data
         user.password = r_form.password.data
-        if r_form.submit.data:
-            pass
 
-    # if nickname present in DB - Error
-    #  elif not - create a new User (Register)
-        # return redirect(url_for('hogwarts_house'))
+        # User that differs from /login but present in DB check:
+        usr_present = sqlite_manager_L4.get_user_info(user.name)
+        print(f"User Present: {usr_present}")
+
+        if usr_present:
+            raise Exception("Nickname is taken. Try another one.")
+        else:
+            return redirect(url_for('hogwarts_house'))
 
     return render_template('register_form.html', form=r_form)
 
 
-@app.route("/hogwarts_house", methods=["GET", "POST"])
+@app.route("/house", methods=["GET", "POST"])
 def hogwarts_house():
     h_form = HogwartsHouseForm()
 
     # Check on page skipping:
-    if not user.nickname or not user.password:
-        return redirect(url_for(('login')))
-    print(user.nickname)
-    print(user.password)
+    page_skipping_check()
 
     if h_form.validate_on_submit():
-
         user.house = h_form.category.data
         return redirect(url_for('magic_item'))
 
     return render_template('hogwarts_house_L4.html', form=h_form, name=user.nickname, language=user.password)
 
 
-@app.route("/magic_item", methods=["GET", "POST"])
+@app.route("/item", methods=["GET", "POST"])
 def magic_item():
     m_form = MagicItemForm()
 
     # Check on page skipping:
-    if not user.nickname or not user.password:
-        return redirect(url_for(('login')))
-    elif not user.house:
-        return redirect(url_for(('hogwarts_house')))
+    page_skipping_check()
 
     # Set a random magic item level
     magic_item_level = randint(1, 10)
@@ -152,6 +155,13 @@ def magic_item():
             </ul>
             <a href="/">Return to the HOME page</a>
         """
+
+
+def page_skipping_check():
+    if not user.nickname or not user.password:
+        return redirect(url_for('login'))
+    elif not user.house:
+        return redirect(url_for('house'))
 
 
 if __name__ == "__main__":
