@@ -63,6 +63,8 @@ def put_user_info(u_nickname, u_password, h_house, item_level):
 
         cur.execute(sql_put, (u_nickname, u_password, h_house, item_level))
         conn.commit()
+    except:
+        raise Exception("User may be taken")
 
     finally:
         conn.close()
