@@ -35,48 +35,58 @@ def check_user(nick, password):
 
         res = cur.execute(sql)
         db_content = res.fetchall()
+        # Return all DB lines (List of Tuples):
+        print(f"1db_content: {db_content}")
+
+        # usr = one Tuple at a Time
+        # usr[0] / elm in usr = first cell of every Tuple
 
         for usr in db_content:
-            print(f"Part: {usr}")
+            print(f"Show next tuple: {usr}")
             if usr[0] == nick and usr[1] == password:
-                print(f"usr[0]: {usr[0]}")
-                print(f"nick: {nick}")
-                print(f"usr[1]: {usr[1]}")
-                print(f"password: {password}")
                 return True
-            else:
-                return False
-
-            # for usr in db_content:
-            #     print(f"usr: {usr}")
-            #     print(f"usr[0]: {usr[0]}")
-            #     print(f"nick: {nick}")
-            #     if usr[0] == nick:
-            #         return usr
-
-
+        return False
 
     finally:
         conn.close()
 
 
-def put_user_info(n, p, h, m):
+def put_user_info(u_nickname, u_password, h_house, item_level):
     try:
         conn = sqlite3.connect("user_L4.db")
         cur = conn.cursor()
-
-        print(f"Passed Nickname: {n}") #+
-        print(f"Passed Password: {p}") #+
-        print(f"Passed House: {h}") #+
-        print(f"Passed m_item: {m}") #+
 
         sql = f"""
         INSERT INTO users (nickname, password, house, magic_item_level)
         VALUES(?, ?, ?, ?)
         """
 
-        cur.execute(sql, (n, p, h, m))
+        cur.execute(sql, (u_nickname, u_password, h_house, item_level))
         conn.commit()
+
+    finally:
+        conn.close()
+
+
+def get_all_info(u_nickname, u_password):
+    try:
+        conn = sqlite3.connect("user_L4.db")
+        cur = conn.cursor()
+
+        sql = """
+            SELECT nickname, password, house, magic_item_level FROM users;  
+        """
+
+        res = cur.execute(sql)
+        all_user_info = res.fetchall()
+        # Return all DB lines (List of Tuples):
+        print(f"db_content: {all_user_info}")
+
+        for tuple_line in all_user_info:
+            print(f"Tuple line: {tuple_line}")
+            if u_nickname and u_password in tuple_line:
+                return tuple_line
+        raise Exception("DB Error")
 
     finally:
         conn.close()

@@ -67,12 +67,13 @@ class MagicItemForm(FlaskForm):
     submit = SubmitField('Get Your Magic Item')
 
 
-usr_present = None
+usr_present = False
 
 
 @app.route("/", methods=["GET", "POST"])
 @app.route("/login", methods=["GET", "POST"])
 def login():
+    print("START ??????????????????????????????????")
     global usr_present
     l_form = LoginForm()
     # Create table
@@ -133,14 +134,6 @@ def register():
 def hogwarts_house():
     h_form = HogwartsHouseForm()
 
-    # Check on page skipping:
-    print("PRE-PASS1")
-    if not user.nickname or not user.password:
-        print("1Redirected !!!!!!!!!!!!!!!!!!!!!!!!!")
-        return redirect(url_for('login'))
-    print("PASSED1")
-    # FOR SOME REASON CHECKS TWICE!!!!!!!!!!!!!!!!!!!!!!!!
-
     if h_form.validate_on_submit():
         user.house = h_form.category.data
         print(f"HOUSE: {user.house}")
@@ -155,16 +148,6 @@ def magic_item():
     global usr_present
     m_form = MagicItemForm()
 
-    # Check on page skipping:
-    print("PRE-PASS2")
-    if not user.nickname or not user.password:
-        print("2Redirected !!!!!!!!!!!!!!!!!!!!!!!!!")
-        return redirect(url_for('login'))
-    elif not user.house:
-        print("3Redirected !!!!!!!!!!!!!!!!!!!!!!!!!")
-        return redirect(url_for('hogwarts_house'))
-    print("PASSED2")
-
     # Set a random magic item level
     print(f"MIL before: {user.magic_item_level}")
     magic_item_level = randint(1, 10)
@@ -173,14 +156,10 @@ def magic_item():
 
     if usr_present:
         print(f"Show User from DB")
-        db_content = sqlite_manager_L4.check_user(user.nickname, user.password, get_all_info)
-        print('6!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
-        print(f"db_content: {db_content}")
-        print(f"db[0]: {db_content[0]}")
-        user.nickname = db_content[0]
-        user.password = db_content[1]
-        user.house = db_content[2]
-        user.magic_item_level = db_content[3]
+        all_info = sqlite_manager_L4.get_all_info(user.nickname, user.password)
+        print(f"ALL INFO: {all_info}")
+        # Set all User info according to DB:
+        user.nickname, user.password, user.house, user.magic_item_level = all_info
 
     else:
         print("Put new User in DB!!!!!!!!!!!!!!!!!!!!!")
