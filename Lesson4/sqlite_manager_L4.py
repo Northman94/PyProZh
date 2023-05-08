@@ -29,11 +29,11 @@ def check_user(nick, password):
         conn = sqlite3.connect("user_L4.db")
         cur = conn.cursor()
 
-        sql = """
+        sql_check = """
             SELECT nickname, password, house, magic_item_level FROM users;  
         """
 
-        res = cur.execute(sql)
+        res = cur.execute(sql_check)
         db_content = res.fetchall()
         # Return all DB lines (List of Tuples):
         print(f"1db_content: {db_content}")
@@ -56,16 +56,32 @@ def put_user_info(u_nickname, u_password, h_house, item_level):
         conn = sqlite3.connect("user_L4.db")
         cur = conn.cursor()
 
-        sql = f"""
+        sql_put = f"""
         INSERT INTO users (nickname, password, house, magic_item_level)
         VALUES(?, ?, ?, ?)
         """
 
-        cur.execute(sql, (u_nickname, u_password, h_house, item_level))
+        cur.execute(sql_put, (u_nickname, u_password, h_house, item_level))
         conn.commit()
 
     finally:
         conn.close()
+
+def del_user_info(del_nickname):
+    try:
+        conn = sqlite3.connect("user_L4.db")
+        cur = conn.cursor()
+
+        sql_del = f"""
+        DELETE FROM users WHERE nickname=?
+        """
+
+        cur.execute(sql_del, (del_nickname,))
+        conn.commit()
+
+    finally:
+        conn.close()
+
 
 
 def get_all_info(u_nickname, u_password):

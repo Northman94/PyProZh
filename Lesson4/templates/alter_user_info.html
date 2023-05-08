@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Alter User Info</title>
+  </head>
+  <body>
+    <h4>OLD Nickname: {{nickname}}</h4>
+    <h4>OLD Password: {{password}}</h4>
+    <h4>OLD House: {{house}}</h4>
+    <h4>OLD Magic Item: {{magic_item_level}}</h4>
+
+    <h2>Enter your new Nickname and Password</h2>
+    <form method="POST">
+      {{ form.csrf_token }}
+      <p>
+        {{ form.new_nickname.label }}
+        <br>
+        {{ form.new_nickname(size=30) }}
+      </p>
+      <p>
+        {{ form.new_password.label }}
+        <br>
+        {{ form.new_password(size=30) }}
+      </p>
+
+      <h2>Choose your Hogwarts House:</h2>
+      <div>
+        {% for subfield in form.new_category %}
+        <label>
+          {{ subfield }} {{ subfield.label }}
+        </label>
+        {% endfor %}
+      </div>
+      <p>{{ form.submit() }}</p>
+    </form>
+  </body>
+</html>

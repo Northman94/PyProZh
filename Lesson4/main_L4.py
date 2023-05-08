@@ -67,6 +67,19 @@ class MagicItemForm(FlaskForm):
     submit = SubmitField('Get Your Magic Item')
 
 
+class AlteringUserForm(FlaskForm):
+    new_nickname = StringField('New nickname', validators=[DataRequired(), Length(3, 30)])
+    new_password = StringField('New password', validators=[DataRequired(), Length(3, 30)])
+
+    new_category = RadioField('Choose your Hogwarts House:', validators=[InputRequired(message=None)],
+                          choices=[('Griffindor', 'Griffindor'),
+                                   ('Ravenclaw', 'Ravenclaw'),
+                                   ('Hufflepuff', 'Hufflepuff'),
+                                   ('Slytherin', 'Slytherin')])
+
+    submit = SubmitField('Update User Info')
+
+
 usr_present = False
 
 
@@ -162,7 +175,7 @@ def magic_item():
         user.nickname, user.password, user.house, user.magic_item_level = all_info
 
     else:
-        print("Put new User in DB!!!!!!!!!!!!!!!!!!!!!")
+        print("Put new User in DB")
         sqlite_manager_L4.put_user_info(user.nickname, user.password, user.house, user.magic_item_level)
 
     # Display the user's info & suggest to Return:
@@ -175,7 +188,35 @@ def magic_item():
                 <li>Magic Item Level: {user.magic_item_level}</li>
             </ul>
             <a href="/">Return to the HOME page</a>
+            <br>
+            <a href="/alter">Change User Info</a>
         """
+
+
+@app.route("/alter", methods=["GET", "POST"])
+def alter_user_info():
+    alter_form = AlteringUserForm()
+
+    if alter_form.validate_on_submit():
+        print("About to DEL")
+        sqlite_manager_L4.del_user_info(user.nickname)
+
+        user.nickname = alter_form.new_nickname.data
+        user.password = alter_form.new_password.data
+        user.house = alter_form.new_category.data
+        user.get_grade(randint(1, 10))
+
+        print("Pre ALTER")
+        # Update DB
+        sqlite_manager_L4.put_user_info(user.nickname, user.password, user.house, user.magic_item_level)
+        # redirect the user to the magic item page
+        print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+        return redirect(url_for('magic_item'))
+        # check usr_present var!!!!!!!!!
+
+    return render_template('alter_user_info.html', form=alter_form, nickname=user.nickname, password=user.password, house=user.house, magic_item_level=user.magic_item_level)
+
+
 
 if __name__ == "__main__":
     try:
