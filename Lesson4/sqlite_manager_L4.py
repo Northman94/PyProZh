@@ -24,7 +24,7 @@ def create_table():
         conn.close()
 
 
-def get_user_info(nick, password, get_all_info):
+def check_user(nick, password):
     try:
         conn = sqlite3.connect("user_L4.db")
         cur = conn.cursor()
@@ -36,41 +36,47 @@ def get_user_info(nick, password, get_all_info):
         res = cur.execute(sql)
         db_content = res.fetchall()
 
-        if get_all_info:
-            for usr in db_content:
-                print(usr)
-                print(f"5!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-                print(usr[0])
-                print(nick)
-                #if usr[0] == nick:
-                return usr
+        for usr in db_content:
+            print(f"Part: {usr}")
+            if usr[0] == nick and usr[1] == password:
+                print(f"usr[0]: {usr[0]}")
+                print(f"nick: {nick}")
+                print(f"usr[1]: {usr[1]}")
+                print(f"password: {password}")
+                return True
+            else:
+                return False
 
-        else:
-            for usr in db_content:
-                print(f"Part: {usr}")
-                if usr[0] == nick and usr[1] == password:
-                    return True
-                else:
-                    return False
+            # for usr in db_content:
+            #     print(f"usr: {usr}")
+            #     print(f"usr[0]: {usr[0]}")
+            #     print(f"nick: {nick}")
+            #     if usr[0] == nick:
+            #         return usr
+
+
 
     finally:
         conn.close()
 
 
-def put_user_info(nickname, password, house, magic_item):
+def put_user_info(n, p, h, m):
     try:
         conn = sqlite3.connect("user_L4.db")
         cur = conn.cursor()
 
-        sql = """
+        print(f"Passed Nickname: {n}") #+
+        print(f"Passed Password: {p}") #+
+        print(f"Passed House: {h}") #+
+        print(f"Passed m_item: {m}") #+
+
+        sql = f"""
         INSERT INTO users (nickname, password, house, magic_item_level)
-        VALUES('{}', '{}', '{}', {});
-        """.format(nickname, password, house, magic_item)
+        VALUES(?, ?, ?, ?)
+        """
 
-        res = cur.execute(sql)
-
-        db_content = res.fetchall()
-        print(db_content)
+        cur.execute(sql, (n, p, h, m))
+        conn.commit()
 
     finally:
         conn.close()

@@ -73,32 +73,34 @@ usr_present = None
 @app.route("/", methods=["GET", "POST"])
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    get_all_info = False
-
+    global usr_present
     l_form = LoginForm()
     # Create table
     sqlite_manager_L4.create_table()
 
     if l_form.validate_on_submit():
-        user.name = l_form.nickname.data
+        user.nickname = l_form.nickname.data
         user.password = l_form.password.data
 
         # Check DB
-        global usr_present
-        usr_present = sqlite_manager_L4.get_user_info(user.name, user.password, get_all_info)
+        print(f"User Entered: {user.nickname}")
+        usr_present = sqlite_manager_L4.check_user(user.nickname, user.password)
         print(f"User Present: {usr_present}")
-
+        # SUBMIT
         if l_form.submit.data:
             if usr_present:
+                print(f"Redirect to /magic. Show user from DB")
                 return redirect(url_for('magic_item'))
             else:
+                print(f"No such User in DB to Submit. Error Raise.")
                 raise Exception("User is absent. Try to Register.")  # +
-
+        # REGISTER
         elif l_form.register.data:
             if usr_present:
-                # Treat Existing user as login
+                print(f"Treat Existing user as login.To /magic")
                 return redirect(url_for('magic_item'))
             else:
+                print(f"To New User registration.")
                 return redirect(url_for('register'))
 
     return render_template('login_form.html', form=l_form)
@@ -106,20 +108,22 @@ def login():
 
 @app.route("/registration", methods=["GET", "POST"])
 def register():
+    global usr_present
     r_form = RegisterForm()
 
     if r_form.validate_on_submit():
-        user.name = r_form.nickname.data
+        user.nickname = r_form.nickname.data
         user.password = r_form.password.data
 
-        # User that differs from /login but present in DB check:
-        global usr_present
-        usr_present = sqlite_manager_L4.get_user_info(user.name)
+        print(f"User that differs from /login but present in DB check.")
+        usr_present = sqlite_manager_L4.check_user(user.nickname, user.password)
         print(f"User Present: {usr_present}")
 
         if usr_present:
+            print("Trying to register Existing User")
             raise Exception("Nickname is taken. Try another one.")
         else:
+            print(f"To house selection.")
             return redirect(url_for('hogwarts_house'))
 
     return render_template('register_form.html', form=r_form)
@@ -130,43 +134,56 @@ def hogwarts_house():
     h_form = HogwartsHouseForm()
 
     # Check on page skipping:
-    page_skipping_check()
+    print("PRE-PASS1")
+    if not user.nickname or not user.password:
+        print("1Redirected !!!!!!!!!!!!!!!!!!!!!!!!!")
+        return redirect(url_for('login'))
+    print("PASSED1")
+    # FOR SOME REASON CHECKS TWICE!!!!!!!!!!!!!!!!!!!!!!!!
 
     if h_form.validate_on_submit():
         user.house = h_form.category.data
+        print(f"HOUSE: {user.house}")
+        print(f"To Last Page.")
         return redirect(url_for('magic_item'))
 
-    return render_template('hogwarts_house_L4.html', form=h_form, name=user.nickname, language=user.password)
+    return render_template('hogwarts_house_L4.html', form=h_form, nickname=user.nickname, password=user.password)
 
 
 @app.route("/item", methods=["GET", "POST"])
 def magic_item():
     global usr_present
-    get_all_info = True
-
     m_form = MagicItemForm()
 
     # Check on page skipping:
-    page_skipping_check()
+    print("PRE-PASS2")
+    if not user.nickname or not user.password:
+        print("2Redirected !!!!!!!!!!!!!!!!!!!!!!!!!")
+        return redirect(url_for('login'))
+    elif not user.house:
+        print("3Redirected !!!!!!!!!!!!!!!!!!!!!!!!!")
+        return redirect(url_for('hogwarts_house'))
+    print("PASSED2")
 
     # Set a random magic item level
+    print(f"MIL before: {user.magic_item_level}")
     magic_item_level = randint(1, 10)
     user.get_grade(magic_item_level)
-
-
+    print(f"MIL after: {user.magic_item_level}")
 
     if usr_present:
-        # Get User from DB
-        db_content = sqlite_manager_L4.get_user_info(user.nickname, user.password, get_all_info)
+        print(f"Show User from DB")
+        db_content = sqlite_manager_L4.check_user(user.nickname, user.password, get_all_info)
         print('6!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
-        print(db_content)
+        print(f"db_content: {db_content}")
+        print(f"db[0]: {db_content[0]}")
         user.nickname = db_content[0]
-        user.password = db_content [1]
+        user.password = db_content[1]
         user.house = db_content[2]
         user.magic_item_level = db_content[3]
 
     else:
-        # Put new User in DB
+        print("Put new User in DB!!!!!!!!!!!!!!!!!!!!!")
         sqlite_manager_L4.put_user_info(user.nickname, user.password, user.house, user.magic_item_level)
 
     # Display the user's info & suggest to Return:
@@ -180,14 +197,6 @@ def magic_item():
             </ul>
             <a href="/">Return to the HOME page</a>
         """
-
-
-def page_skipping_check():
-    if not user.nickname or not user.password:
-        return redirect(url_for('login'))
-    elif not user.house:
-        return redirect(url_for('house'))
-
 
 if __name__ == "__main__":
     try:
