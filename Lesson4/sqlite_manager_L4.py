@@ -33,10 +33,9 @@ def check_user(nick, password):
             SELECT nickname, password, house, magic_item_level FROM users;  
         """
 
+        # Return all DB lines (List of Tuples):
         res = cur.execute(sql_check)
         db_content = res.fetchall()
-        # Return all DB lines (List of Tuples):
-        print(f"1db_content: {db_content}")
 
         # usr = one Tuple at a Time
         # usr[0] / elm in usr = first cell of every Tuple
@@ -95,9 +94,9 @@ def get_all_info(u_nickname, u_password):
             SELECT nickname, password, house, magic_item_level FROM users;  
         """
 
+        # Return all DB lines (List of Tuples):
         res = cur.execute(sql)
         all_user_info = res.fetchall()
-        # Return all DB lines (List of Tuples):
         print(f"db_content: {all_user_info}")
 
         for tuple_line in all_user_info:

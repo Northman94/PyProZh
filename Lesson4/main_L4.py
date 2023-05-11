@@ -86,7 +86,7 @@ usr_present = False
 @app.route("/", methods=["GET", "POST"])
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    print("START ??????????????????????????????????")
+
     global usr_present
     l_form = LoginForm()
     # Create table
@@ -97,24 +97,23 @@ def login():
         user.password = l_form.password.data
 
         # Check DB
-        print(f"User Entered: {user.nickname}")
         usr_present = sqlite_manager_L4.check_user(user.nickname, user.password)
-        print(f"User Present: {usr_present}")
+
         # SUBMIT
         if l_form.submit.data:
             if usr_present:
-                print(f"Redirect to /magic. Show user from DB")
+                # Redirect to /magic. Show user from DB
                 return redirect(url_for('magic_item'))
             else:
-                print(f"No such User in DB to Submit. Error Raise.")
+                # No such User in DB to Submit. Error Raise
                 raise Exception("User is absent. Try to Register.")  # +
         # REGISTER
         elif l_form.register.data:
             if usr_present:
-                print(f"Treat Existing user as login.To /magic")
+                # Treat Existing user as login.To /magic
                 return redirect(url_for('magic_item'))
             else:
-                print(f"To New User registration.")
+                # To New User registration
                 return redirect(url_for('register'))
 
     return render_template('login_form.html', form=l_form)
@@ -129,15 +128,14 @@ def register():
         user.nickname = r_form.nickname.data
         user.password = r_form.password.data
 
-        print(f"User that differs from /login but present in DB check.")
+        # User that differs from /login but present in DB check
         usr_present = sqlite_manager_L4.check_user(user.nickname, user.password)
-        print(f"User Present: {usr_present}")
 
         if usr_present:
-            print("Trying to register Existing User")
+            # Trying to register Existing User
             raise Exception("Nickname is taken. Try another one.")
         else:
-            print(f"To house selection.")
+            # To house selection
             return redirect(url_for('hogwarts_house'))
 
     return render_template('register_form.html', form=r_form)
@@ -149,8 +147,7 @@ def hogwarts_house():
 
     if h_form.validate_on_submit():
         user.house = h_form.category.data
-        print(f"HOUSE: {user.house}")
-        print(f"To Last Page.")
+        # To Last Page:
         return redirect(url_for('magic_item'))
 
     return render_template('hogwarts_house_L4.html', form=h_form, nickname=user.nickname, password=user.password)
@@ -162,20 +159,17 @@ def magic_item():
     m_form = MagicItemForm()
 
     # Set a random magic item level
-    print(f"MIL before: {user.magic_item_level}")
     magic_item_level = randint(1, 10)
     user.get_grade(magic_item_level)
-    print(f"MIL after: {user.magic_item_level}")
 
     if usr_present:
-        print(f"Show User from DB")
+        # Return all User info from DB:
         all_info = sqlite_manager_L4.get_all_info(user.nickname, user.password)
-        print(f"ALL INFO: {all_info}")
         # Set all User info according to DB:
         user.nickname, user.password, user.house, user.magic_item_level = all_info
 
     else:
-        print("Put new User in DB")
+        # Put new User in DB
         sqlite_manager_L4.put_user_info(user.nickname, user.password, user.house, user.magic_item_level)
 
     # Display the user's info & suggest to Return:
@@ -198,7 +192,7 @@ def alter_user_info():
     alter_form = AlteringUserForm()
 
     if alter_form.validate_on_submit():
-        print("About to DEL")
+        # Delete User
         sqlite_manager_L4.del_user_info(user.nickname)
 
         user.nickname = alter_form.new_nickname.data
@@ -206,13 +200,10 @@ def alter_user_info():
         user.house = alter_form.new_category.data
         user.get_grade(randint(1, 10))
 
-        print("Pre ALTER")
         # Update DB
         sqlite_manager_L4.put_user_info(user.nickname, user.password, user.house, user.magic_item_level)
         # redirect the user to the magic item page
-        print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
         return redirect(url_for('magic_item'))
-        # check usr_present var!!!!!!!!!
 
     return render_template('alter_user_info.html', form=alter_form, nickname=user.nickname, password=user.password, house=user.house, magic_item_level=user.magic_item_level)
 
