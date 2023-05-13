@@ -3,12 +3,20 @@
 <head>
     <title>User Profile</title>
 </head>
+
 <body>
     <h1>User Profile</h1>
     <br>
     <h3>Name: {{ user.name }}</h3>
     <h3>Password: {{ user.password }}</h3>
-    <h3>Language: {{ user.language }}</h3>
-    <h3>Grade: {{ user.grade }}</h3>
+
+    <button><a href="{% url 'login' %}">Change User</a></button>
+
+    <form method="post" action="{% url 'delete' %}">
+        {% csrf_token %}
+        <input type="hidden" name="username" value="{{ user.name }}">
+        <input type="hidden" name="password" value="{{ user.password }}">
+        <input type="submit" value="Delete User">
+    </form>
 </body>
 </html>

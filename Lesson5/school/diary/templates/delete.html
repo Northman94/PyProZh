@@ -6,6 +6,8 @@
 <body>
     <h1>Delete Profile</h1>
 
+    <p>{{ message }}</p>
+
     <form method="post" action="{% url 'delete' %}">
         {% csrf_token %}
         <label for="username">Username:</label>
