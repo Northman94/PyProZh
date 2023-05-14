@@ -9,6 +9,7 @@ urlpatterns = [
 
 
 
+
 """
 URL configuration for school project.
 

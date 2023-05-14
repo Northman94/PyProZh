@@ -1,65 +1,95 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.db import models
+from .models import User
 
-class User(models.Model):
-    name = models.CharField(max_length=100)
-    password = models.CharField(max_length=100)
 
-user_list = []
-new_user = User()
+user = User(name="", password="", language="", grade="")
+
 
 def login(request):
+    global user
+
     if request.method == 'POST':
+        # Info local save from HTML-Form:
         l_name = request.POST.get('username')
         l_password = request.POST.get('password')
 
-        if user_list:
-            print(f"User_LIST: {user_list}")
-            for user in user_list:
-                print(f"User iter: {user}")
-                if user.name == l_name and user.password == l_password:
-                    print(f"REDIRECT TO SHOW PROFILE")
-                    return redirect(show_profile)
+        # Log-In Button Pressed:
+        if request.POST.get('action') == 'Login':
+            if check_user_in_db(l_name, l_password):
+                return render(request, 'profile.html', {'message': 'OLD User'})
+            else:
+                return render(request, 'login.html', {'message': 'No such User.'})
 
-        print(f"CREATING NEW USER")
-        new_user.name = l_name
-        new_user.password = l_password
 
-        user_list.append(new_user)
-        print(f"new_user: {new_user}")
-        print(f"user_list: {user_list}")
-        print(f"SHOW PROFILE")
-        return redirect(show_profile)
-    print(f"RENDER LOGIN")
+        # Register Button Pressed:
+        if request.POST.get('action') == 'Register':
+            # Check if user PRESENT in DB:
+            if check_user_in_db(l_name, l_password):
+                #return HttpResponse('Username already exists. Please choose a different username.')
+                return render(request, 'login.html', {'message': 'Username already exists.'})
+            else:
+                print(f"Create a NEW USER")
+                user = User(name=l_name, password=l_password)
+                user.save()
+                return render(request, 'profile.html', {'user': user})
+                #return redirect(show_profile)
+
     return render(request, 'login.html')
 
 
 def show_profile(request):
-    if user_list:
-        print("User list is not EMPTY")
-        print(f"new_user: {new_user}")
-        print(f"user_list: {user_list}")
-        user = user_list[0]  # Assuming only one user is logged in at a time
-        return render(request, 'profile.html', {'user': user})
-    else:
-        return HttpResponse('No user found.')
+    global user
+
+    if request.method == 'POST':
+        if request.POST.get('action') == 'Change User':
+            # Clean all User local Info:
+            user.name = ""
+            user.password = ""
+            user.language = ""
+            user.grade = ""
+            return render(request, 'login.html')
+
+        if request.POST.get('action') == 'Delete User':
+            return render(request, 'delete.html', {'user': user})
+            #return delete_profile(request)
+
+
+
+    return render(request, 'profile.html', {'user': user})
+    #return render(request, 'profile.html', {'message': 'No User Found'})
+    #return HttpResponse('No user found in DB.')
+
+
+def check_user_in_db(c_name,c_password):
+    # SHOULD FILL HERE ALL FIELDS FROM DB:
+    db_content = User.objects.all()
+
+    # Iterate through each user
+    for db_item in db_content:
+        # Check if the username matches the search criteria:
+        if db_item.name == c_name and db_item.password == c_password:
+            # Assign the user's fields to variables:
+            user.name = db_item.name
+            user.password = db_item.password
+            user.language = db_item.language
+            user.grade = db_item.grade
+            return True
+
+    return False
 
 
 def delete_profile(request):
     if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
+        if request.POST.get('action') == 'Return to Login':
+            user.delete()
+            # Clean all User local Info:
+            user.name = ""
+            user.password = ""
+            user.language = ""
+            user.grade = ""
 
-        for user in user_list:
-            if user.name == username and user.password == password:
-                user_list.remove(user)
-                return redirect(delete_success)
-
-        return HttpResponse('Invalid credentials. Please try again.')
+            return render(request, 'login.html')
 
     return render(request, 'delete.html')
-
-
-def delete_success(request):
-    return render(request, 'delete.html', {'message': 'User Deleted'})

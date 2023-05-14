@@ -1,20 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Delete Profile</title>
+    <title>Delete User</title>
 </head>
 <body>
-    <h1>Delete Profile</h1>
+    <h1>User Deleted</h1>
 
-    <p>{{ message }}</p>
-
-    <form method="post" action="{% url 'delete' %}">
+    <form method="post">
         {% csrf_token %}
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required><br><br>
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required><br><br>
-        <input type="submit" value="Delete Profile">
+        <input type="submit" name="action" value="Return to Login">
     </form>
+
 </body>
 </html>
