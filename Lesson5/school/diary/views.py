@@ -18,13 +18,16 @@ def login(request):
         # Log-In Button Pressed:
         if request.POST.get('action') == 'Login':
             if check_user_in_db(l_name, l_password):
-                return render(request, 'profile.html', {'message': 'OLD User'})
+                print("USER  PRESENT")
+                return render(request, 'profile.html', {'user': user})
             else:
+                print("USER ABSENT")
                 return render(request, 'login.html', {'message': 'No such User.'})
 
 
         # Register Button Pressed:
         if request.POST.get('action') == 'Register':
+            print("REGISTER BUTTON")
             # Check if user PRESENT in DB:
             if check_user_in_db(l_name, l_password):
                 #return HttpResponse('Username already exists. Please choose a different username.')
@@ -41,28 +44,31 @@ def login(request):
 
 def show_profile(request):
     global user
-
+    print("I'm here!!!!!!!!!!!!!!!")
     if request.method == 'POST':
+        print(f"POST!!!!!!!!!!!!!!!!!")
         if request.POST.get('action') == 'Change User':
+            print(f"Back to Login!!!!!!!!!!!!!!")
             # Clean all User local Info:
-            user.name = ""
-            user.password = ""
-            user.language = ""
-            user.grade = ""
+            # user.name = ""
+            # user.password = ""
+            # user.language = ""
+            # user.grade = ""
             return render(request, 'login.html')
 
         if request.POST.get('action') == 'Delete User':
-            return render(request, 'delete.html', {'user': user})
+            print(f"Render Delete page")
             #return delete_profile(request)
+            return render(request, 'delete.html', {'user': user})
 
-
-
+    print(f"Render Profile Page")
     return render(request, 'profile.html', {'user': user})
     #return render(request, 'profile.html', {'message': 'No User Found'})
     #return HttpResponse('No user found in DB.')
 
 
-def check_user_in_db(c_name,c_password):
+def check_user_in_db(c_name, c_password):
+    print("CHECK USER IN DB")
     # SHOULD FILL HERE ALL FIELDS FROM DB:
     db_content = User.objects.all()
 
@@ -81,15 +87,20 @@ def check_user_in_db(c_name,c_password):
 
 
 def delete_profile(request):
+    print("DELETE FUNC")
     if request.method == 'POST':
+        print("DELETE POST")
         if request.POST.get('action') == 'Return to Login':
-            user.delete()
-            # Clean all User local Info:
-            user.name = ""
-            user.password = ""
-            user.language = ""
-            user.grade = ""
+            print("DELETE")
+            if check_user_in_db(user.name, user.password):
+                user.delete()
+                # Clean all User local Info:
+                # user.name = ""
+                # user.password = ""
+                # user.language = ""
+                # user.grade = ""
 
-            return render(request, 'login.html')
+                return render(request, 'login.html')
 
+    print("DELETE HTML")
     return render(request, 'delete.html')

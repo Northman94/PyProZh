@@ -10,15 +10,20 @@
     <h3>Name: {{ user.name }}</h3>
     <h3>Password: {{ user.password }}</h3>
 
-    <!--<button><a href="{% url 'login' %}">Change User</a></button> -->
+    <form method="post" action="{% url 'profile' %}">
+        {% csrf_token %}
+        <input type="hidden" name="username" value="{{ user.name }}">
+        <input type="hidden" name="password" value="{{ user.password }}">
+
+        <input type="submit" name="action" value="Change User">
+    </form>
 
     <form method="post" action="{% url 'delete' %}">
         {% csrf_token %}
         <input type="hidden" name="username" value="{{ user.name }}">
         <input type="hidden" name="password" value="{{ user.password }}">
 
-        <input type="submit" value="Change User">
-        <input type="submit" value="Delete User">
+        <input type="submit" name="action" value="Delete User">
     </form>
 </body>
 </html>
