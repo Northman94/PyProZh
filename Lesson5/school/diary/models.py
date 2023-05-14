@@ -9,4 +9,3 @@ class User(models.Model):
     language = models.CharField(max_length=100)
     grade = models.IntegerField(default=0)
 
-
