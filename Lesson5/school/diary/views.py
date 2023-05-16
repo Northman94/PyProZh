@@ -40,10 +40,21 @@ def login(request):
                 print("CREATE NEW USER")
                 user = User(name=l_name, password=l_password)
                 user.save()
-                return redirect(show_profile)
+                return redirect(alter_user)
 
     print("RENDER LOGIN")
     return render(request, 'login.html')
+
+
+def alter_user(request):
+    global user
+    print("SET/ALTER PROFILE")
+
+    if request.method == "POST":
+        if request.POST.get('action') == 'Next':
+            return redirect(show_profile)
+
+    return render(request, 'alter.html', {'user': user})
 
 
 def show_profile(request):
@@ -54,7 +65,7 @@ def show_profile(request):
         print("SHOW PR POST")
         if request.POST.get('action') == 'Change User':
             print("CHANGE USER")
-            return redirect(login)
+            return redirect(alter_user)
 
         if request.POST.get('action') == 'Delete User':
             print("DELETE USER")
