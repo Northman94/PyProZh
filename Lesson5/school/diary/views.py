@@ -51,7 +51,19 @@ def alter_user(request):
     print("SET/ALTER PROFILE")
 
     if request.method == "POST":
+        a_name = request.POST.get('username')
+        a_password = request.POST.get('password')
+        a_language = request.POST.get('language')
+
         if request.POST.get('action') == 'Next':
+            print("SET NEW VALUES")
+            user.name = a_name
+            user.password = a_password
+            user.language = a_language
+            print("SAVING USER AGAIN IN DB")
+            user = User(name=a_name, password=a_password, language=a_language)
+            user.save()
+
             return redirect(show_profile)
 
     return render(request, 'alter.html', {'user': user})

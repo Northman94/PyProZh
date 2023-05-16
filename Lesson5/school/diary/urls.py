@@ -1,11 +1,11 @@
 # diary/urls.py
 from django.urls import path
-from .views import login, alter_user, show_profile, delete_profile
+from . import views
 
 urlpatterns = [
-    path('', login, name='login'),
-    path('login/', login, name='login'),
-    path('alter/', alter_user, name='alter'),
-    path('profile/', show_profile, name='profile'),
-    path('delete/', delete_profile, name='delete'),
+    path('', views.login, name='login'),
+    path('login/', views.login, name='login'),
+    path('alter/', views.alter_user, name='alter_user'),
+    path('profile/', views.show_profile, name='show_profile'),
+    path('delete/', views.delete_profile, name='delete_profile'),
 ]

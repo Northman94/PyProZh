@@ -8,7 +8,7 @@
     <h3>Password: {{ user.password }}</h3>
     <h3>Language: {{ user.language }}</h3>
 
-    <h1>Alter User:</h1>
+    <h1>You can set / change User:</h1>
     <form method="POST" action="{% url 'alter_user' %}">
         {% csrf_token %}
         <label for="name">Name:</label>
