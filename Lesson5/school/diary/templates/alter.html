@@ -11,8 +11,8 @@
     <h1>You can set / change User:</h1>
     <form method="POST" action="{% url 'alter_user' %}">
         {% csrf_token %}
-        <label for="name">Name:</label>
-        <input type="text" name="name" id="name" value="{{ user.name }}"><br><br>
+        <label for="username">Name:</label>
+        <input type="text" name="username" id="username" value="{{ user.name }}"><br><br>
 
         <label for="password">Password:</label>
         <input type="password" name="password" id="password" value="{{ user.password }}"><br><br>

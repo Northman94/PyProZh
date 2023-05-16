@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.db import models
 from .models import User
+from random import randint
 
 
 user = User(name="", password="", language="", grade="")
@@ -36,10 +37,10 @@ def login(request):
             if check_user_in_db(l_name, l_password):
                 return render(request, 'login.html', {'message': 'Username already exists.'})
             else:
-                # Create a NEW USER
-                print("CREATE NEW USER")
+                # Create USER partially to have filled suggestions in next form
+                print("CREATE NEW LOCAL PRE USER")
                 user = User(name=l_name, password=l_password)
-                user.save()
+
                 return redirect(alter_user)
 
     print("RENDER LOGIN")
@@ -54,19 +55,36 @@ def alter_user(request):
         a_name = request.POST.get('username')
         a_password = request.POST.get('password')
         a_language = request.POST.get('language')
+        a_grade = get_grade(randint(1, 10))
 
         if request.POST.get('action') == 'Next':
-            print("SET NEW VALUES")
-            user.name = a_name
-            user.password = a_password
-            user.language = a_language
-            print("SAVING USER AGAIN IN DB")
-            user = User(name=a_name, password=a_password, language=a_language)
-            user.save()
+            if check_user_in_db(a_name, a_password):
+                # User present in DB - update fields
+                # Avoiding New Instance Creation
+                db_user = User.objects.get(id=user.id)
+                db_user.name = a_name
+                db_user.password = a_password
+                db_user.language = a_language
+                db_user.grade = a_grade
+                # Updating info for forms
+                user.name = a_name
+                user.password = a_password
+                user.language = a_language
+                user.grade = a_grade
+
+                db_user.save()
+            else:
+                # Create a new user
+                user.name = a_name
+                user.password = a_password
+                user.language = a_language
+                user.grade = a_grade
+                user.save()
 
             return redirect(show_profile)
 
     return render(request, 'alter.html', {'user': user})
+
 
 
 def show_profile(request):
@@ -114,3 +132,12 @@ def delete_profile(request):
 
     print("RENDER DELETE PR")
     return render(request, 'delete.html')
+
+
+def get_grade(level):
+    if level < 4:
+        return 'Low'
+    elif level < 7:
+        return 'Medium'
+    else:
+        return 'High'

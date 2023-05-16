@@ -7,5 +7,5 @@ class User(models.Model):
     name = models.CharField(max_length=100)
     password = models.CharField(max_length=100)
     language = models.CharField(max_length=100)
-    grade = models.IntegerField(default=0)
+    grade = models.CharField(max_length=10)
 
