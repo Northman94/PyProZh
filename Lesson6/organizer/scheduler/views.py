@@ -1,3 +1,4 @@
+# scheduler/views.py
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.db import models
@@ -130,3 +131,8 @@ def get_grade(level):
         return 'Medium'
     else:
         return 'High'
+
+
+def see_user(request):
+    all_usrs = User.objects.all()
+    return HttpResponse(all_usrs)
