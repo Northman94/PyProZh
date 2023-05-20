@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+</body>
+</html><!DOCTYPE html>
+<html>
+<head>
+    <title>Alter User</title>
+</head>
+<body>
+    <h3>Name: {{ user.name }}</h3>
+    <h3>Password: {{ user.password }}</h3>
+    <h3>Language: {{ user.language }}</h3>
+
+    <h1>You can set / change User:</h1>
+    <form method="POST" action="{% url 'alter_user' %}">
+        {% csrf_token %}
+        <label for="username">Name:</label>
+        <input type="text" name="username" id="username" value="{{ user.name }}"><br><br>
+
+        <label for="password">Password:</label>
+        <input type="password" name="password" id="password" value="{{ user.password }}"><br><br>
+
+        <label for="language">Language:</label>
+        <input type="text" name="language" id="language" value="{{ user.language }}"><br><br>
+
+        <input type="submit" name="action" value="Next">
+    </form>
+</body>
+</html>
