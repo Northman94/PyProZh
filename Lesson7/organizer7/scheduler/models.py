@@ -10,10 +10,19 @@ class User(models.Model):
     grade = models.CharField(max_length=10)
 
     def __str__(self):
-        # Removed Password from Displaying.
-        return f"<ul>" \
-               f"<li>User: {self.name}</li>" \
-               f"<li>Language: {self.language}</li>"\
-               f"<li>Grade: {self.grade}</li>" \
-               f"</ul>"
+        return self.name
 
+
+
+    #def __str__(self):
+        # # Removed Password from Displaying.
+        # return f"<ul>" \
+        #        f"<li>User: {self.name}</li>" \
+        #        f"<li>Language: {self.language}</li>"\
+        #        f"<li>Grade: {self.grade}</li>" \
+        #        f"</ul>"
+
+
+class Note(models.Model):
+
+    pass

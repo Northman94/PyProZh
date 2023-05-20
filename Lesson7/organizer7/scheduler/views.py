@@ -1,9 +1,10 @@
 # scheduler/views.py
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
+from django.template import loader
 from django.db import models
-from .models import User
 from random import randint
+from .models import User
 
 
 user = User(name="", password="", language="", grade="")
@@ -133,6 +134,10 @@ def get_grade(level):
         return 'High'
 
 
-def see_user(request):
-    all_usrs = User.objects.all()
-    return HttpResponse(all_usrs)
+def admin_see_user(request):
+    template = loader.get_template("admin_user_list_base.html")
+    context = {
+        "users": User.objects.all()
+    }
+    return HttpResponse(template.render(context, request))
+

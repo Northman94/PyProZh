@@ -87,15 +87,19 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
+        # Your password can’t be too similar to your other personal information.
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
     },
     {
+        # Your password must contain at least 8 characters.
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
     },
     {
+        # Your password can’t be a commonly used password.
         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
     },
     {
+        # Your password can’t be entirely numeric.
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]

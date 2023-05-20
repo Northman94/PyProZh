@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User List</title>
+</head>
+
+<body>
+    {% block main_part %}
+        {%  if users %}
+            <ul>
+                {% for user in users %}
+                    <li>
+                        User:
+                        <a href=" users/{{ users.name }}">
+                            {{ user }}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        <!--Future extension in admin_user_info-->
+        {% block day_detail %}{% endblock day_detail %}
+
+    {% endblock main_part %}
+</body>
+</html>
