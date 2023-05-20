@@ -1,5 +1,5 @@
 # scheduler/views.py
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.template import loader
 from django.db import models
@@ -141,3 +141,8 @@ def admin_see_user(request):
     }
     return HttpResponse(template.render(context, request))
 
+
+# "username" parameter is passed from path of "scheduler/urls.py" file
+def admin_user_info(request, username):
+    admin_usr = get_object_or_404(User, name=username)
+    return render(request, "admin_user_info.html", {"language": admin_usr.language, "grade": admin_usr.grade})
