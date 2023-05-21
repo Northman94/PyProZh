@@ -145,4 +145,14 @@ def admin_see_user(request):
 # "username" parameter is passed from path of "scheduler/urls.py" file
 def admin_user_info(request, username):
     admin_usr = get_object_or_404(User, name=username)
-    return render(request, "admin_user_info.html", {"language": admin_usr.language, "grade": admin_usr.grade})
+    return render(request, "admin_user_info.html",
+                  {"username": username,
+                   "language": admin_usr.language,
+                   "grade": admin_usr.grade})
+
+
+def admin_user_notes(request, username):
+    admin_usr = get_object_or_404(User, name=username)
+
+
+    raise NotImplemented("NOT IMPLEMENTED")

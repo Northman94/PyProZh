@@ -13,16 +13,8 @@ class User(models.Model):
         return self.name
 
 
-
-    #def __str__(self):
-        # # Removed Password from Displaying.
-        # return f"<ul>" \
-        #        f"<li>User: {self.name}</li>" \
-        #        f"<li>Language: {self.language}</li>"\
-        #        f"<li>Grade: {self.grade}</li>" \
-        #        f"</ul>"
-
-
 class Note(models.Model):
-
-    pass
+    # Cascade deleted all Obj with no relations
+    user_note = models.ForeignKey(User, on_delete=models.CASCADE)
+    title = models.CharField(max_length=100)
+    msg = models.CharField(max_length=250)
