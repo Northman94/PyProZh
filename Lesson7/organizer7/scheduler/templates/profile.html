@@ -29,5 +29,13 @@
 
         <input type="submit" name="action" value="Delete User">
     </form>
+
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="username" value="{{ user.name }}">
+        <input type="hidden" name="password" value="{{ user.password }}">
+
+        <input type="submit" name="action" value="NOTES">
+    </form>
 </body>
 </html>

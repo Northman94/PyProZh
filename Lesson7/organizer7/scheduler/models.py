@@ -14,6 +14,7 @@ class User(models.Model):
 
 
 class Note(models.Model):
+    objects = None
     # Cascade deleted all Obj with no relations
     user_note = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=100)

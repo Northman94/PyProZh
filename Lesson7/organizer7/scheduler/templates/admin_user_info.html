@@ -1,7 +1,7 @@
 {% extends "./admin_user_list_base.html" %}
 
 {% block title %}
-    <h2>Week Day {{ object.day }}</h2>
+    <h2>{{ username }} Info</h2>
 {% endblock title %}
 
 {% block user_info %}
@@ -12,4 +12,22 @@
                 <br>
                 <li>Grade: {{ grade }}</li>
             </ul>
+
+            {%  if note %}
+            <ul>
+                {% for single_notation in note %}
+                    <li>
+                        User:
+                        <a href=" {{ user.name }}/">
+                            {{ user }}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
 {% endblock user_info %}
+
+
+<!--Future extension in admin_user_notes-->
+{% block user_note %} {% endblock user_note %}

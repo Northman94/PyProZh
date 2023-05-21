@@ -4,8 +4,7 @@ from django.http import HttpResponse
 from django.template import loader
 from django.db import models
 from random import randint
-from .models import User
-
+from .models import User, Note
 
 user = User(name="", password="", language="", grade="")
 
@@ -83,7 +82,6 @@ def alter_user(request):
     return render(request, 'alter.html', {'user': user})
 
 
-
 def show_profile(request):
     global user
 
@@ -95,6 +93,10 @@ def show_profile(request):
             user = User.objects.filter(name=user.name, password=user.password).first()
             user.delete()
             return redirect(delete_profile)
+
+        # Create/Show NOTES page:
+        if request.POST.get('action') == 'NOTES':
+            return redirect(user_notes)
 
     print("RENDER PROFILE")
     return render(request, 'profile.html', {'user': user})
@@ -151,8 +153,30 @@ def admin_user_info(request, username):
                    "grade": admin_usr.grade})
 
 
-def admin_user_notes(request, username):
-    admin_usr = get_object_or_404(User, name=username)
+def user_notes(request):
+    global user
+
+    if request.method == 'POST':
+        new_note_title = request.POST.get('note_title')
+        new_note_msg = request.POST.get('note_msg')
+
+        if new_note_title and new_note_msg:
+            # Save the user object if it is not saved
+            if not user.pk:
+                user.save()
+
+            note = Note.objects.create(user_note=user, title=new_note_title, msg=new_note_msg)
+
+    notes = Note.objects.filter(user_note=user)
+
+    return render(request, 'user_notes.html', {'notes': notes})
 
 
-    raise NotImplemented("NOT IMPLEMENTED")
+
+
+#def admin_user_notes(request):
+    # , note_id
+    #admin_usr = get_object_or_404(User, name=note_id)
+
+
+    #raise NotImplemented("NOT IMPLEMENTED")
