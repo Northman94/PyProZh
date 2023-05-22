@@ -161,6 +161,8 @@ def show_note_details(request, note_id):
     return render(request, 'note_details.html', {'note': note})
 
 
+# Admin part Requests:
+# path('users/'...
 def admin_see_user(request):
     template = loader.get_template("admin_user_list_base.html")
     context = {
@@ -169,6 +171,7 @@ def admin_see_user(request):
     return HttpResponse(template.render(context, request))
 
 
+# path('users/<str:username>/'...
 # "username" parameter is passed from path of "scheduler/urls.py" file
 def admin_user_info(request, username):
     admin_usr = get_object_or_404(User, name=username)
@@ -181,15 +184,11 @@ def admin_user_info(request, username):
                    "notes": notes})
 
 
-from django.http import Http404
-
+# path('note/<str:username>/<int:note_id>/'...
 def admin_user_notes(request, username, note_id):
-    try:
-        note = get_object_or_404(Note, id=note_id, user_note__name=username)
-        return render(request, 'admin_user_notes.html', {'note': note})
-    except Http404:
-        # Handle note not found error, e.g., display an error message or redirect
-        return HttpResponse('No such Note.')
+    note = get_object_or_404(Note, id=note_id, user_note__name=username)
+    return render(request, 'admin_user_notes.html', {'note': note, 'username': username})
+
 
 
 
