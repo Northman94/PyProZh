@@ -13,5 +13,5 @@ urlpatterns = [
     path('users/<str:username>/', views.admin_user_info, name='user_info'),
 
     path('note/', views.user_notes, name='user_notes'),
-
+    path('note/<int:note_id>/', views.show_note_details, name='note_details'),
 ]

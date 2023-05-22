@@ -7,21 +7,24 @@
 </head>
 
 <body>
-    <h2>User Note {{ user.name }}</h2>
+    <h2>User Note</h2>
 
     <br>
     <form method="post">
         {% csrf_token %}
-        <input type="text" name="note_title" placeholder="Note Title"><br>
-        <textarea name="note_msg" placeholder="Note Message"></textarea><br>
+        <input type="text" name="note_title" placeholder="Title"><br>
+        <textarea name="note_msg" placeholder="Note"></textarea><br>
         <input type="submit" value="Submit">
     </form>
+
     <br>
-    <h3>Old Notes:</h3>
+
+    <h3>Notes:</h3>
     <ul>
         {% for note in notes %}
-            <li><a href="#" onclick="showNote('{{ note.msg }}')">{{ note.title }}</a></li>
+            <li><a href="{% url 'note_details' note.id %}">{{ note.title }}</a></li>
         {% endfor %}
     </ul>
 
 </body>
+</html>

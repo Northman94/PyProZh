@@ -155,23 +155,28 @@ def admin_user_info(request, username):
 
 def user_notes(request):
     global user
+    print(f"USERNAME!!!!!!!! {user.name}")
+    # Check/Update user from DB:
+    user, created = User.objects.get_or_create(name=user.name)
+    notes = Note.objects.filter(user_note=user.id)
 
     if request.method == 'POST':
         new_note_title = request.POST.get('note_title')
         new_note_msg = request.POST.get('note_msg')
 
         if new_note_title and new_note_msg:
-            # Save the user object if it is not saved
-            if not user.pk:
+            # Save the user object if it is not already saved
+            if created:
                 user.save()
 
             note = Note.objects.create(user_note=user, title=new_note_title, msg=new_note_msg)
 
-    notes = Note.objects.filter(user_note=user)
-
     return render(request, 'user_notes.html', {'notes': notes})
 
 
+def show_note_details(request, note_id):
+    note = get_object_or_404(Note, id=note_id)
+    return render(request, 'note_details.html', {'note': note})
 
 
 #def admin_user_notes(request):
