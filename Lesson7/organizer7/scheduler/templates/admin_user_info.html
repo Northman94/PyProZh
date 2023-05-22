@@ -5,29 +5,24 @@
 {% endblock title %}
 
 {% block user_info %}
-            <ul>
-                <li>User: {{ username }}</li>
-                <br>
-                <li>Language: {{ language }}</li>
-                <br>
-                <li>Grade: {{ grade }}</li>
-            </ul>
+    <ul>
+        <li>User: {{ username }}</li>
+        <br>
+        <li>Language: {{ language }}</li>
+        <br>
+        <li>Grade: {{ grade }}</li>
+    </ul>
 
-            {%  if note %}
-            <ul>
-                {% for single_notation in note %}
-                    <li>
-                        User:
-                        <a href=" {{ user.name }}/">
-                            {{ user }}
-                        </a>
-                    </li>
-                {% endfor %}
-            </ul>
-        {% endif %}
-
+    {% if notes %}
+        <h3>Notes:</h3>
+        <ul>
+            {% for note in notes %}
+                <li>
+                    <a href="{% url 'admin_note' username=note.user_note.name note_id=note.id %}">
+                        {{ note.title }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
 {% endblock user_info %}
-
-
-<!--Future extension in admin_user_notes-->
-{% block user_note %} {% endblock user_note %}

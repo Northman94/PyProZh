@@ -26,7 +26,6 @@ def login(request):
                 # User Absent:
                 return render(request, 'login.html', {'message': 'No such User.'})
 
-
         # Register Button Pressed:
         if request.POST.get('action') == 'Register':
             # Check if user PRESENT in DB:
@@ -98,7 +97,7 @@ def show_profile(request):
         if request.POST.get('action') == 'NOTES':
             return redirect(user_notes)
 
-    print("RENDER PROFILE")
+    # RENDER PROFILE
     return render(request, 'profile.html', {'user': user})
 
 
@@ -123,7 +122,7 @@ def delete_profile(request):
         if request.POST.get('action') == 'Return to Login':
             return redirect(login)
 
-    print("RENDER DELETE")
+    # RENDER DELETE
     return render(request, 'delete.html')
 
 
@@ -136,26 +135,9 @@ def get_grade(level):
         return 'High'
 
 
-def admin_see_user(request):
-    template = loader.get_template("admin_user_list_base.html")
-    context = {
-        "users": User.objects.all()
-    }
-    return HttpResponse(template.render(context, request))
-
-
-# "username" parameter is passed from path of "scheduler/urls.py" file
-def admin_user_info(request, username):
-    admin_usr = get_object_or_404(User, name=username)
-    return render(request, "admin_user_info.html",
-                  {"username": username,
-                   "language": admin_usr.language,
-                   "grade": admin_usr.grade})
-
-
 def user_notes(request):
     global user
-    print(f"USERNAME!!!!!!!! {user.name}")
+
     # Check/Update user from DB:
     user, created = User.objects.get_or_create(name=user.name)
     notes = Note.objects.filter(user_note=user.id)
@@ -179,9 +161,35 @@ def show_note_details(request, note_id):
     return render(request, 'note_details.html', {'note': note})
 
 
-#def admin_user_notes(request):
-    # , note_id
-    #admin_usr = get_object_or_404(User, name=note_id)
+def admin_see_user(request):
+    template = loader.get_template("admin_user_list_base.html")
+    context = {
+        "users": User.objects.all()
+    }
+    return HttpResponse(template.render(context, request))
 
 
-    #raise NotImplemented("NOT IMPLEMENTED")
+# "username" parameter is passed from path of "scheduler/urls.py" file
+def admin_user_info(request, username):
+    admin_usr = get_object_or_404(User, name=username)
+    notes = Note.objects.filter(user_note=admin_usr)
+
+    return render(request, "admin_user_info.html",
+                  {"username": username,
+                   "language": admin_usr.language,
+                   "grade": admin_usr.grade,
+                   "notes": notes})
+
+
+from django.http import Http404
+
+def admin_user_notes(request, username, note_id):
+    try:
+        note = get_object_or_404(Note, id=note_id, user_note__name=username)
+        return render(request, 'admin_user_notes.html', {'note': note})
+    except Http404:
+        # Handle note not found error, e.g., display an error message or redirect
+        return HttpResponse('No such Note.')
+
+
+

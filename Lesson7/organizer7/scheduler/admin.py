@@ -10,6 +10,7 @@ class UserAdministration(admin.ModelAdmin):
 
 
 class NoteAdministration(admin.ModelAdmin):
+    # Note Table UI
     list_display = ('title', 'msg')
 
 
