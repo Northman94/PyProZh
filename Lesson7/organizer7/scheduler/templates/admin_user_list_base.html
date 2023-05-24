@@ -12,7 +12,7 @@
                 {% for user in users %}
                     <li>
                         User:
-                        <a href=" {{ user.name }}/">
+                        <a href="{% url 'user_info' username=user.name %}">
                             {{ user }}
                         </a>
                     </li>
