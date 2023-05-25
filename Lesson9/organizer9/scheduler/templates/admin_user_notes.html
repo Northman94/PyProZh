@@ -1,0 +1,10 @@
+
+
+{% block user_info %}
+    <ul>
+        <li>Title: {{ note.title }}</li>
+        <li>Message: {{ note.msg }}</li>
+    </ul>
+
+    <a href="{% url 'user_info' username=username %}">Return to List of Notes</a>
+{% endblock %}

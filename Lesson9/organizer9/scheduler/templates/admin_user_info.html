@@ -1,0 +1,25 @@
+{% extends "./admin_user_list_base.html" %}
+
+
+{% block user_info %}
+    <ul>
+        <li>User: {{ username }}</li>
+        <br>
+        <li>Language: {{ language }}</li>
+        <br>
+        <li>Grade: {{ grade }}</li>
+    </ul>
+
+    {% if notes %}
+        <h3>Notes:</h3>
+        <ul>
+            {% for note in notes %}
+                <li>
+                    <a href="{% url 'admin_note' username=note.user_note.name note_id=note.id %}">
+                        {{ note.title }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endblock user_info %}

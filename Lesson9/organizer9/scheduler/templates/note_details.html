@@ -1,0 +1,16 @@
+<!-- note_details.html -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Note Details</title>
+</head>
+
+<body>
+    <h2>Note Details</h2>
+    <h3>Title: {{ note.title }}</h3>
+    <p>Message: {{ note.msg }}</p>
+    <a href="{% url 'user_notes' %}">Back to Notes</a>
+</body>
+</html>
