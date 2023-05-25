@@ -136,22 +136,17 @@ def get_grade(level):
 
 
 def user_notes(request):
-    global user
-
     # Check/Update user from DB:
-    user, created = MyUser.objects.get_or_create(name=user.name)
-    notes = Note.objects.filter(user_note=user.id)
+    #person, create = MyUser.objects.get_or_create(name=user.name)
+    person = MyUser.objects.filter(name=user.name).first()
+    notes = Note.objects.filter(user_note=person.id)
 
     if request.method == 'POST':
         new_note_title = request.POST.get('note_title')
         new_note_msg = request.POST.get('note_msg')
 
         if new_note_title and new_note_msg:
-            # Save the user object if it is not already saved
-            if created:
-                user.save()
-
-            note = Note.objects.create(user_note=user, title=new_note_title, msg=new_note_msg)
+            note = Note.objects.create(user_note=person, title=new_note_title, msg=new_note_msg)
 
     return render(request, 'user_notes.html', {'notes': notes})
 
