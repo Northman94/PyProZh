@@ -189,6 +189,3 @@ def admin_user_notes(request, username, note_id):
     note = get_object_or_404(Note, id=note_id, user_note__name=username)
     return render(request, 'admin_user_notes.html', {'note': note, 'username': username})
 
-
-
-
