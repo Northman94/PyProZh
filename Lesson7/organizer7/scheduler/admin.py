@@ -1,6 +1,6 @@
 # scheduler/admin.py
 from django.contrib import admin
-from .models import User, Note
+from .models import MyUser, Note
 
 
 # Register our model to show in /admin:
@@ -14,5 +14,5 @@ class NoteAdministration(admin.ModelAdmin):
     list_display = ('title', 'msg')
 
 
-admin.site.register(User, UserAdministration)
+admin.site.register(MyUser, UserAdministration)
 admin.site.register(Note, NoteAdministration)

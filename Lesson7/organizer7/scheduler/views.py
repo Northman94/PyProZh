@@ -4,9 +4,9 @@ from django.http import HttpResponse
 from django.template import loader
 from django.db import models
 from random import randint
-from .models import User, Note
+from .models import MyUser, Note
 
-user = User(name="", password="", language="", grade="")
+user = MyUser(name="", password="", language="", grade="")
 
 
 def login(request):
@@ -33,7 +33,7 @@ def login(request):
                 return render(request, 'login.html', {'message': 'Username already exists.'})
             else:
                 # Create USER partially to have filled suggestions in the next form
-                user = User(name=l_name, password=l_password)
+                user = MyUser(name=l_name, password=l_password)
                 return redirect(alter_user)
 
     # RENDER LOGIN
@@ -54,7 +54,7 @@ def alter_user(request):
             if check_user_in_db(a_name, a_password):
                 # User present in DB => update fields
                 # Avoiding New Instance Creation
-                db_user = User.objects.get(id=user.id)
+                db_user = MyUser.objects.get(id=user.id)
                 db_user.name = a_name
                 db_user.password = a_password
                 db_user.language = a_language
@@ -89,7 +89,7 @@ def show_profile(request):
             return redirect(alter_user)
 
         if request.POST.get('action') == 'Delete User':
-            user = User.objects.filter(name=user.name, password=user.password).first()
+            user = MyUser.objects.filter(name=user.name, password=user.password).first()
             user.delete()
             return redirect(delete_profile)
 
@@ -105,7 +105,7 @@ def check_user_in_db(c_name, c_password):
     global user
 
     # FILTERED FIELDS FROM DB:
-    db_content = User.objects.filter(name=c_name, password=c_password).first()
+    db_content = MyUser.objects.filter(name=c_name, password=c_password).first()
 
     if db_content:
         # Assign DB user's fields to variables:
@@ -139,7 +139,7 @@ def user_notes(request):
     global user
 
     # Check/Update user from DB:
-    user, created = User.objects.get_or_create(name=user.name)
+    user, created = MyUser.objects.get_or_create(name=user.name)
     notes = Note.objects.filter(user_note=user.id)
 
     if request.method == 'POST':
@@ -166,7 +166,7 @@ def show_note_details(request, note_id):
 def admin_see_user(request):
     template = loader.get_template("admin_user_list_base.html")
     context = {
-        "users": User.objects.all()
+        "users": MyUser.objects.all()
     }
     return HttpResponse(template.render(context, request))
 
@@ -174,7 +174,7 @@ def admin_see_user(request):
 # path('users/<str:username>/'...
 # "username" parameter is passed from path of "scheduler/urls.py" file
 def admin_user_info(request, username):
-    admin_usr = get_object_or_404(User, name=username)
+    admin_usr = get_object_or_404(MyUser, name=username)
     notes = Note.objects.filter(user_note=admin_usr)
 
     return render(request, "admin_user_info.html",
