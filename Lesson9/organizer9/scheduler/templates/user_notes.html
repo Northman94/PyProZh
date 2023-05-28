@@ -12,13 +12,17 @@
     <br>
     <form method="post">
         {% csrf_token %}
+
         <input type="text" name="note_title" placeholder="Title"><br>
         <textarea name="note_msg" placeholder="Note"></textarea><br>
-        <input type="submit" value="Submit">
+        <input type="text" name="note_assignee" placeholder="Note Assignee"><br>
+        <input type="text" name="note_e_mail" placeholder="E-mail"><br>
+
+        <input type="submit" value="Add Note">
     </form>
 
     <br>
-
+    <!--Printing List of Old Notes-->
     <h3>Notes:</h3>
     <ul>
         {% for note in notes %}

@@ -4,6 +4,9 @@
     <ul>
         <li>Title: {{ note.title }}</li>
         <li>Message: {{ note.msg }}</li>
+
+        <li>E-mail: {{ note.e_mail }}</li>
+        <li>Assignee: {{ note.assignee }}</li>
     </ul>
 
     <a href="{% url 'user_info' username=username %}">Return to List of Notes</a>

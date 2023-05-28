@@ -5,6 +5,9 @@ from django.template import loader
 from django.db import models
 from random import randint
 from .models import MyUser, Note
+from .forms import NoteForm
+from django.urls import reverse
+
 
 user = MyUser(name="", password="", language="", grade="")
 
@@ -137,17 +140,42 @@ def get_grade(level):
 
 def user_notes(request):
     # Check/Update user from DB:
-    #person, create = MyUser.objects.get_or_create(name=user.name)
     person = MyUser.objects.filter(name=user.name).first()
     notes = Note.objects.filter(user_note=person.id)
 
     if request.method == 'POST':
+        # Create an instance of the NoteForm (forms.py) to trigger checks
+
+
         new_note_title = request.POST.get('note_title')
-        new_note_msg = request.POST.get('note_msg')
+        new_note_msg=request.POST.get('note_msg')
+        new_note_assignee=request.POST.get('note_assignee')
+        new_note_e_mail=request.POST.get('note_e_mail')
 
+        # form = NoteForm(request.POST)
+        # if form.is_valid():
+        #     new_note_title = form.cleaned_data['note_title']
+        #     new_note_msg = form.cleaned_data['note_msg']
+        #     new_note_assignee = form.cleaned_data['note_assignee']
+        #     new_note_e_mail = form.cleaned_data['note_e_mail']
+
+
+        print(f"form is VALID")
         if new_note_title and new_note_msg:
-            note = Note.objects.create(user_note=person, title=new_note_title, msg=new_note_msg)
+                note = Note.objects.create(user_note=person, title=new_note_title,
+                                           msg=new_note_msg, assignee=new_note_assignee,
+                                           e_mail=new_note_e_mail
+                                           )
 
+                print(f"Note created")
+
+    else:
+        # Create blank instance of NoteForm
+        print("Blank form creation")
+        form = NoteForm()
+
+    print(f"User/Notes List info")
+    #return render(request, 'user_notes.html', {'notes': notes, 'form': form})
     return render(request, 'user_notes.html', {'notes': notes})
 
 
