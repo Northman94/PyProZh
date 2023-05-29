@@ -14,7 +14,7 @@ class MyUser(models.Model):
 
 class Note(models.Model):
     # ForeignKey is a link to certain User in another table
-    # Cascade will delete all Obj with no relations
+    # (.CASCADE) will Delete all Obj-s with no relations
     user_note = models.ForeignKey(MyUser, on_delete=models.CASCADE)
 
     title = models.CharField(max_length=20)
