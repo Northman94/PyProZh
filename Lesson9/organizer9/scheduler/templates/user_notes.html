@@ -12,11 +12,8 @@
     <br>
     <form method="post">
         {% csrf_token %}
-
-        <input type="text" name="note_title" placeholder="Title"><br>
-        <textarea name="note_msg" placeholder="Note"></textarea><br>
-        <input type="text" name="note_assignee" placeholder="Note Assignee"><br>
-        <input type="text" name="note_e_mail" placeholder="E-mail"><br>
+        <!-- Render form fields automatically: -->
+        {{ form.as_p }}
 
         <input type="submit" value="Add Note">
     </form>

@@ -144,39 +144,25 @@ def user_notes(request):
     notes = Note.objects.filter(user_note=person.id)
 
     if request.method == 'POST':
-        # Create an instance of the NoteForm (forms.py) to trigger checks
+        form = NoteForm(request.POST)
+        if form.is_valid():
+            new_note_title = form.cleaned_data['title']
+            new_note_msg = form.cleaned_data['msg']
+            new_note_assignee = form.cleaned_data['assignee']
+            new_note_e_mail = form.cleaned_data['e_mail']
 
-
-        new_note_title = request.POST.get('note_title')
-        new_note_msg=request.POST.get('note_msg')
-        new_note_assignee=request.POST.get('note_assignee')
-        new_note_e_mail=request.POST.get('note_e_mail')
-
-        # form = NoteForm(request.POST)
-        # if form.is_valid():
-        #     new_note_title = form.cleaned_data['note_title']
-        #     new_note_msg = form.cleaned_data['note_msg']
-        #     new_note_assignee = form.cleaned_data['note_assignee']
-        #     new_note_e_mail = form.cleaned_data['note_e_mail']
-
-
-        print(f"form is VALID")
-        if new_note_title and new_note_msg:
-                note = Note.objects.create(user_note=person, title=new_note_title,
-                                           msg=new_note_msg, assignee=new_note_assignee,
-                                           e_mail=new_note_e_mail
-                                           )
-
-                print(f"Note created")
-
+            note = Note.objects.create(user_note=person, title=new_note_title,
+                                       msg=new_note_msg, assignee=new_note_assignee,
+                                       e_mail=new_note_e_mail)
+            print("Note created")
+            # Redirect to refresh the page after creating a note
+            return redirect(user_notes)
     else:
-        # Create blank instance of NoteForm
-        print("Blank form creation")
         form = NoteForm()
 
-    print(f"User/Notes List info")
-    #return render(request, 'user_notes.html', {'notes': notes, 'form': form})
-    return render(request, 'user_notes.html', {'notes': notes})
+    print("User/Notes List info")
+    return render(request, 'user_notes.html', {'notes': notes, 'form': form})
+
 
 
 def show_note_details(request, note_id):
