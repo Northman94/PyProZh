@@ -1,0 +1,31 @@
+<!-- user_notes.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Note</title>
+</head>
+
+<body>
+    <h2>User Note</h2>
+
+    <br>
+    <form method="post">
+        {% csrf_token %}
+        <!-- Render form fields automatically: -->
+        {{ form.as_p }}
+
+        <input type="submit" value="Add Note">
+    </form>
+
+    <br>
+    <!--Printing List of Old Notes-->
+    <h3>Notes:</h3>
+    <ul>
+        {% for note in notes %}
+            <li><a href="{% url 'note_details' note.id %}">{{ note.title }}</a></li>
+        {% endfor %}
+    </ul>
+
+</body>
+</html>

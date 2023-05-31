@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Delete User</title>
+</head>
+
+<body>
+    <h1>User Deleted</h1>
+
+    <form method="post" >
+        {% csrf_token %}
+        <input type="submit" name="action" value="Return to Login">
+    </form>
+
+</body>
+</html>

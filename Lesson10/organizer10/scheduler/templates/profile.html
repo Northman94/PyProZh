@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Profile</title>
+</head>
+
+<body>
+    <h1>User Profile:</h1>
+    <br>
+    <h3>Name: {{ user.name }}</h3>
+    <h3>Password: {{ user.password }}</h3>
+    <h3>Language: {{ user.language }}</h3>
+    <h3>Grade: {{ user.grade }}</h3>
+
+
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="username" value="{{ user.name }}">
+        <input type="hidden" name="password" value="{{ user.password }}">
+
+        <input type="submit" name="action" value="Change User">
+    </form>
+
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="username" value="{{ user.name }}">
+        <input type="hidden" name="password" value="{{ user.password }}">
+
+        <input type="submit" name="action" value="Delete User">
+    </form>
+
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="username" value="{{ user.name }}">
+        <input type="hidden" name="password" value="{{ user.password }}">
+
+        <input type="submit" name="action" value="NOTES">
+    </form>
+</body>
+</html>
