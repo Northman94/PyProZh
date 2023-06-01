@@ -3,10 +3,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.template import loader
 from random import randint
-from .models import MyUser, Note
 from .forms import NoteForm
-from django.db import models
-from django.urls import reverse
+from .models import MyUser, Note
 
 
 user = MyUser(name="", password="", language="", grade="")
@@ -197,4 +195,3 @@ def admin_user_info(request, username):
 def admin_user_notes(request, username, note_id):
     note = get_object_or_404(Note, id=note_id, user_note__name=username)
     return render(request, 'admin_user_notes.html', {'note': note, 'username': username})
-
