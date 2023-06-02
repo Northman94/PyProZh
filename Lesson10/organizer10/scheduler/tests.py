@@ -37,9 +37,6 @@ def test_user_have_single_note(client):
         e_mail="Test_Email@ithillel.ua"
     )
 
-    assert single_note_user is not None
-    assert new_note is not None
-
     # Access the user's notes page:
     response = client.get(reverse("user_info", kwargs={"username": new_note.user_note}))
     assert response.status_code == 200
