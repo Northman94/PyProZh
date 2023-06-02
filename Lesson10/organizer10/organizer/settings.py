@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 
 try:
-    from secure_L9 import SECRET_KEY
+    from secure_L10 import SECRET_KEY
 except:
     SECRET_KEY = "fake_secret_key_for_test_purpose_only"
 
