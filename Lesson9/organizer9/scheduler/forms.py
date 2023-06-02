@@ -15,7 +15,7 @@ class NoteForm(forms.Form):
         cln_title = self.cleaned_data['title']
 
         if len(cln_title.split(' ')) < 2:
-            raise ValidationError("Use two words Title")
+            raise ValidationError("Use at least two words Title")
         return cln_title
 
     def clean_assignee(self):
@@ -27,12 +27,13 @@ class NoteForm(forms.Form):
         # This check makes it possible for field to be Optional:
         if cln_assingnee:
             # Amount of Letters in Assignee /or/ Amount of words:
-            if len(cln_assingnee) < 5 or len(words) < 2:
+            #if len(cln_assingnee) < 5 or len(words) < 2:
+            if words and len(words) < 2:
                 raise forms.ValidationError("Assignee should have at least 2 words"
                                             " and be at least 5 characters long.")
 
         for word in words:
-            if not word[0].isupper():
+            if not word.istitle():
                 raise ValidationError("Each word in the Assignee field"
                                       " should be in capital letters.")
 

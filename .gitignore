@@ -162,8 +162,10 @@ cython_debug/
 /Lesson4/secret_key_L4.txt
 /Lesson4/secret_key_L4.py
 
-Lesson10/organizer10/organizer/secure_L10.py
+
 Lesson5/school/school/secure_L5.py
 Lesson6/organizer/organizer/secure_L6.py
 Lesson7/organizer7/organizer/secure_L7.py
 Lesson9/organizer9/organizer/secure_L9.py
+Lesson10/organizer10/organizer/secure_L10.py
+
