@@ -1,0 +1,29 @@
+name: Run Linter, PyTest & Black
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  execute_Linter_PyTest_Black:
+    name: Requirements installation and Run all test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+
+      - name: Install Requirements
+        run: pip install -r requirements.txt
+
+      - name: Execute flake8 linter
+        run: flake8 --config .flake8 Lesson10/organizer10/scheduler
+
+      - name: Execute PyTest
+        env:
+          DJANGO_SETTINGS_MODULE: organizer.settings
+        run: pytest Lesson10/organizer10
