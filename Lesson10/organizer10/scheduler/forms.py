@@ -2,7 +2,6 @@
 # forms.py should contain fields input check
 from django import forms
 from django.core.exceptions import ValidationError
-from .models import Note
 
 
 class NoteForm(forms.Form):
@@ -57,4 +56,3 @@ class NoteForm(forms.Form):
             raise ValidationError("Email or Assignee is not filled properly.")
 
         return cleaned_data
-

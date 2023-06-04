@@ -1,8 +1,8 @@
 # tests.py
-from django.test import TestCase
+# from django.test import TestCase
 from django.urls import reverse
 import pytest
-from pytest_django.asserts import assertQuerysetEqual, assertTemplateUsed
+from pytest_django.asserts import assertTemplateUsed  # assertQuerysetEqual
 from .models import MyUser, Note
 
 

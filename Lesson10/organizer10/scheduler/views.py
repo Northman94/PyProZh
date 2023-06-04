@@ -149,9 +149,9 @@ def user_notes(request):
             new_note_assignee = form.cleaned_data['assignee']
             new_note_e_mail = form.cleaned_data['e_mail']
 
-            note = Note.objects.create(user_note=person, title=new_note_title,
-                                       msg=new_note_msg, assignee=new_note_assignee,
-                                       e_mail=new_note_e_mail)
+            Note.objects.create(user_note=person, title=new_note_title,
+                                msg=new_note_msg, assignee=new_note_assignee,
+                                e_mail=new_note_e_mail)
             print("Note created")
             # Redirect to refresh the page after creating a note
             return redirect(user_notes)
@@ -160,7 +160,6 @@ def user_notes(request):
 
     print("User/Notes List info")
     return render(request, 'user_notes.html', {'notes': notes, 'form': form})
-
 
 
 def show_note_details(request, note_id):
