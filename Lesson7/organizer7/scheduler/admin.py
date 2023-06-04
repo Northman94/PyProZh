@@ -6,12 +6,12 @@ from .models import MyUser, Note
 # Register our model to show in /admin:
 class UserAdministration(admin.ModelAdmin):
     # Admin Table UI
-    list_display = ("name", "password", "language", "grade")
+    list_display = ('name', 'password', "language", "grade")
 
 
 class NoteAdministration(admin.ModelAdmin):
     # Note Table UI
-    list_display = ("title", "msg")
+    list_display = ('title', 'msg')
 
 
 admin.site.register(MyUser, UserAdministration)

@@ -10,11 +10,11 @@ import sqlite_manager_L4
 app = Flask(__name__)
 csrf = CSRFProtect(app)
 
-app.config["SECRET_KEY"] = SECRET_KEY
+app.config['SECRET_KEY'] = SECRET_KEY
 
 
-class User:
-    def __init__(self, nickname="", password="", house="", magic_item_level=""):
+class User():
+    def __init__(self, nickname='', password='', house='', magic_item_level=''):
         self.nickname = self.check_input(nickname)
         self.password = self.check_input(password)
         self.house = house
@@ -30,76 +30,54 @@ class User:
 
     def get_grade(self, level):
         if level < 4:
-            self.magic_item_level = "Low"
+            self.magic_item_level = 'Low'
         elif level < 7:
-            self.magic_item_level = "Medium"
+            self.magic_item_level = 'Medium'
         else:
-            self.magic_item_level = "High"
+            self.magic_item_level = 'High'
 
 
 user = User()
 
 
 class LoginForm(FlaskForm):
-    nickname = StringField(
-        "Enter your Login.", validators=[DataRequired(), Length(3, 30)]
-    )
-    password = StringField(
-        "Enter Password.", validators=[DataRequired(), Length(3, 30)]
-    )
-    submit = SubmitField("Submit")
-    register = SubmitField("Register new User")
+    nickname = StringField('Enter your Login.', validators=[DataRequired(), Length(3, 30)])
+    password = StringField('Enter Password.', validators=[DataRequired(), Length(3, 30)])
+    submit = SubmitField('Submit')
+    register = SubmitField('Register new User')
 
 
 class RegisterForm(FlaskForm):
-    nickname = StringField(
-        "Enter your Login.", validators=[DataRequired(), Length(3, 30)]
-    )
-    password = StringField(
-        "Enter Password.", validators=[DataRequired(), Length(3, 30)]
-    )
-    submit = SubmitField("Submit new User")
+    nickname = StringField('Enter your Login.', validators=[DataRequired(), Length(3, 30)])
+    password = StringField('Enter Password.', validators=[DataRequired(), Length(3, 30)])
+    submit = SubmitField('Submit new User')
 
 
 class HogwartsHouseForm(FlaskForm):
-    category = RadioField(
-        "Choose your Hogwarts House:",
-        validators=[InputRequired(message=None)],
-        choices=[
-            ("Griffindor", "Griffindor"),
-            ("Ravenclaw", "Ravenclaw"),
-            ("Hufflepuff", "Hufflepuff"),
-            ("Slytherin", "Slytherin"),
-        ],
-    )
+    category = RadioField('Choose your Hogwarts House:', validators=[InputRequired(message=None)],
+                          choices=[('Griffindor', 'Griffindor'),
+                                   ('Ravenclaw', 'Ravenclaw'),
+                                   ('Hufflepuff', 'Hufflepuff'),
+                                   ('Slytherin', 'Slytherin')])
 
-    submit = SubmitField("Next")
+    submit = SubmitField('Next')
 
 
 class MagicItemForm(FlaskForm):
-    submit = SubmitField("Get Your Magic Item")
+    submit = SubmitField('Get Your Magic Item')
 
 
 class AlteringUserForm(FlaskForm):
-    new_nickname = StringField(
-        "New nickname", validators=[DataRequired(), Length(3, 30)]
-    )
-    new_password = StringField(
-        "New password", validators=[DataRequired(), Length(3, 30)]
-    )
+    new_nickname = StringField('New nickname', validators=[DataRequired(), Length(3, 30)])
+    new_password = StringField('New password', validators=[DataRequired(), Length(3, 30)])
 
-    new_category = RadioField(
-        "Choose your Hogwarts House:",
-        validators=[InputRequired(message=None)],
-        choices=[
-            ("Griffindor", "Griffindor"),
-            ("Ravenclaw", "Ravenclaw"),
-            ("Hufflepuff", "Hufflepuff"),
-            ("Slytherin", "Slytherin"),
-        ],
-    )
+    new_category = RadioField('Choose your Hogwarts House:', validators=[InputRequired(message=None)],
+                          choices=[('Griffindor', 'Griffindor'),
+                                   ('Ravenclaw', 'Ravenclaw'),
+                                   ('Hufflepuff', 'Hufflepuff'),
+                                   ('Slytherin', 'Slytherin')])
 
-    submit = SubmitField("Update User Info")
+    submit = SubmitField('Update User Info')
 
 
 usr_present = False
@@ -108,6 +86,7 @@ usr_present = False
 @app.route("/", methods=["GET", "POST"])
 @app.route("/login", methods=["GET", "POST"])
 def login():
+
     global usr_present
     l_form = LoginForm()
     # Create table
@@ -124,7 +103,7 @@ def login():
         if l_form.submit.data:
             if usr_present:
                 # Redirect to /magic. Show user from DB
-                return redirect(url_for("magic_item"))
+                return redirect(url_for('magic_item'))
             else:
                 # No such User in DB to Submit. Error Raise
                 raise Exception("User is absent. Try to Register.")  # +
@@ -132,12 +111,12 @@ def login():
         elif l_form.register.data:
             if usr_present:
                 # Treat Existing user as login.To /magic
-                return redirect(url_for("magic_item"))
+                return redirect(url_for('magic_item'))
             else:
                 # To New User registration
-                return redirect(url_for("register"))
+                return redirect(url_for('register'))
 
-    return render_template("login_form.html", form=l_form)
+    return render_template('login_form.html', form=l_form)
 
 
 @app.route("/registration", methods=["GET", "POST"])
@@ -157,9 +136,9 @@ def register():
             raise Exception("Nickname is taken. Try another one.")
         else:
             # To house selection
-            return redirect(url_for("hogwarts_house"))
+            return redirect(url_for('hogwarts_house'))
 
-    return render_template("register_form.html", form=r_form)
+    return render_template('register_form.html', form=r_form)
 
 
 @app.route("/house", methods=["GET", "POST"])
@@ -169,14 +148,9 @@ def hogwarts_house():
     if h_form.validate_on_submit():
         user.house = h_form.category.data
         # To Last Page:
-        return redirect(url_for("magic_item"))
+        return redirect(url_for('magic_item'))
 
-    return render_template(
-        "hogwarts_house_L4.html",
-        form=h_form,
-        nickname=user.nickname,
-        password=user.password,
-    )
+    return render_template('hogwarts_house_L4.html', form=h_form, nickname=user.nickname, password=user.password)
 
 
 @app.route("/item", methods=["GET", "POST"])
@@ -196,9 +170,7 @@ def magic_item():
 
     else:
         # Put new User in DB
-        sqlite_manager_L4.put_user_info(
-            user.nickname, user.password, user.house, user.magic_item_level
-        )
+        sqlite_manager_L4.put_user_info(user.nickname, user.password, user.house, user.magic_item_level)
 
     # Display the user's info & suggest to Return:
     return f"""
@@ -229,20 +201,12 @@ def alter_user_info():
         user.get_grade(randint(1, 10))
 
         # Update DB
-        sqlite_manager_L4.put_user_info(
-            user.nickname, user.password, user.house, user.magic_item_level
-        )
+        sqlite_manager_L4.put_user_info(user.nickname, user.password, user.house, user.magic_item_level)
         # redirect the user to the magic item page
-        return redirect(url_for("magic_item"))
+        return redirect(url_for('magic_item'))
 
-    return render_template(
-        "alter_user_info.html",
-        form=alter_form,
-        nickname=user.nickname,
-        password=user.password,
-        house=user.house,
-        magic_item_level=user.magic_item_level,
-    )
+    return render_template('alter_user_info.html', form=alter_form, nickname=user.nickname, password=user.password, house=user.house, magic_item_level=user.magic_item_level)
+
 
 
 if __name__ == "__main__":
@@ -250,4 +214,4 @@ if __name__ == "__main__":
         conn = sqlite3.connect("user_L4.db")
     finally:
         conn.close()
-    app.run(host="0.0.0.0", port="8000", debug=True)
+    app.run(host='0.0.0.0', port='8000', debug=True)

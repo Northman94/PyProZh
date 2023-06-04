@@ -7,21 +7,17 @@ def create_table():
         cur = conn.cursor()
 
         # Check if table exists
-        cur.execute(
-            "SELECT name FROM sqlite_master WHERE type='table' AND name='users'"
-        )
+        cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='users'")
         result = cur.fetchone()
 
         # Create table if it doesn't exist
         if not result:
-            cur.execute(
-                """CREATE TABLE users
+            cur.execute('''CREATE TABLE users
                          (id INTEGER PRIMARY KEY AUTOINCREMENT,
                           nickname TEXT NOT NULL UNIQUE,
                           password TEXT NOT NULL,
                           house TEXT,
-                          magic_item_level TEXT)"""
-            )
+                          magic_item_level TEXT)''')
         conn.commit()
 
     finally:
@@ -72,7 +68,6 @@ def put_user_info(u_nickname, u_password, h_house, item_level):
     finally:
         conn.close()
 
-
 def del_user_info(del_nickname):
     try:
         conn = sqlite3.connect("user_L4.db")
@@ -87,6 +82,7 @@ def del_user_info(del_nickname):
 
     finally:
         conn.close()
+
 
 
 def get_all_info(u_nickname, u_password):

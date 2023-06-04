@@ -11,8 +11,7 @@ class User(models.Model):
 
     def __str__(self):
         # Removed Password from Displaying.
-        return (
-            f"<ul><li>User: {self.name}</li>"
-            f"<li>Language: {self.language}</li>"
-            f"<li>Grade: {self.grade}</li></ul>"
-        )
+        return f"<ul><li>User: {self.name}</li>" \
+               f"<li>Language: {self.language}</li>"\
+               f"<li>Grade: {self.grade}</li></ul>"
+

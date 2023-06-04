@@ -4,29 +4,30 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
+
     dependencies = [
-        ("scheduler", "0003_rename_user_myuser"),
+        ('scheduler', '0003_rename_user_myuser'),
     ]
 
     operations = [
         migrations.AddField(
-            model_name="note",
-            name="assignee",
+            model_name='note',
+            name='assignee',
             field=models.CharField(blank=True, max_length=100),
         ),
         migrations.AddField(
-            model_name="note",
-            name="e_mail",
+            model_name='note',
+            name='e_mail',
             field=models.EmailField(blank=True, max_length=254),
         ),
         migrations.AlterField(
-            model_name="note",
-            name="msg",
+            model_name='note',
+            name='msg',
             field=models.CharField(max_length=100),
         ),
         migrations.AlterField(
-            model_name="note",
-            name="title",
+            model_name='note',
+            name='title',
             field=models.CharField(max_length=20),
         ),
     ]
