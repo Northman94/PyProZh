@@ -5,19 +5,31 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('scheduler', '0001_initial'),
+        ("scheduler", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Note',
+            name="Note",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=100)),
-                ('msg', models.CharField(max_length=250)),
-                ('user_note', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='scheduler.user')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("title", models.CharField(max_length=100)),
+                ("msg", models.CharField(max_length=250)),
+                (
+                    "user_note",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="scheduler.user"
+                    ),
+                ),
             ],
         ),
     ]
