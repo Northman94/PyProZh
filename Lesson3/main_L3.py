@@ -8,11 +8,11 @@ from secret_key_L3 import SECRET_KEY
 app = Flask(__name__)
 csrf = CSRFProtect(app)
 
-app.config['SECRET_KEY'] = SECRET_KEY
+app.config["SECRET_KEY"] = SECRET_KEY
 
 
-class User():
-    def __init__(self, name='', language='', house='', magic_item_level=''):
+class User:
+    def __init__(self, name="", language="", house="", magic_item_level=""):
         self.name = self.check_input(name)
         self.language = self.check_input(language)
         self.house = house
@@ -28,34 +28,41 @@ class User():
 
     def get_grade(self, level):
         if level < 4:
-            self.magic_item_level = 'Low'
+            self.magic_item_level = "Low"
         elif level < 7:
-            self.magic_item_level = 'Medium'
+            self.magic_item_level = "Medium"
         else:
-            self.magic_item_level = 'High'
+            self.magic_item_level = "High"
 
 
 user = User()
 
 
 class NameAndLanguageForm(FlaskForm):
-    name = StringField('Enter your Name?', validators=[DataRequired(), Length(3, 30)])
-    language = StringField('What is your Language?', validators=[DataRequired(), Length(3, 30)])
-    submit = SubmitField('Next')
+    name = StringField("Enter your Name?", validators=[DataRequired(), Length(3, 30)])
+    language = StringField(
+        "What is your Language?", validators=[DataRequired(), Length(3, 30)]
+    )
+    submit = SubmitField("Next")
 
 
 class HogwartsHouseForm(FlaskForm):
-    category = RadioField('Choose your Hogwarts House:', validators=[InputRequired(message=None)],
-                          choices=[('Griffindor', 'Griffindor'),
-                                   ('Ravenclaw', 'Ravenclaw'),
-                                   ('Hufflepuff', 'Hufflepuff'),
-                                   ('Slytherin', 'Slytherin')])
+    category = RadioField(
+        "Choose your Hogwarts House:",
+        validators=[InputRequired(message=None)],
+        choices=[
+            ("Griffindor", "Griffindor"),
+            ("Ravenclaw", "Ravenclaw"),
+            ("Hufflepuff", "Hufflepuff"),
+            ("Slytherin", "Slytherin"),
+        ],
+    )
 
-    submit = SubmitField('Next')
+    submit = SubmitField("Next")
 
 
 class MagicItemForm(FlaskForm):
-    submit = SubmitField('Get Your Magic Item')
+    submit = SubmitField("Get Your Magic Item")
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -65,9 +72,9 @@ def name_and_language():
     if form.validate_on_submit():
         user.name = form.name.data
         user.language = form.language.data
-        return redirect(url_for('hogwarts_house'))
+        return redirect(url_for("hogwarts_house"))
 
-    return render_template('name_and_language.html', form=form)
+    return render_template("name_and_language.html", form=form)
 
 
 @app.route("/hogwarts_house", methods=["GET", "POST"])
@@ -76,13 +83,13 @@ def hogwarts_house():
 
     # Check on page skipping:
     if not user.name or not user.language:
-        return redirect(url_for(('name_and_language')))
+        return redirect(url_for(("name_and_language")))
 
     if form.validate_on_submit():
         user.house = form.category.data
-        return redirect(url_for('magic_item'))
+        return redirect(url_for("magic_item"))
 
-    return render_template('hogwarts_house.html', form=form)
+    return render_template("hogwarts_house.html", form=form)
 
 
 @app.route("/magic_item", methods=["GET", "POST"])
@@ -91,9 +98,9 @@ def magic_item():
 
     # Check on page skipping:
     if not user.name or not user.language:
-        return redirect(url_for(('name_and_language')))
+        return redirect(url_for(("name_and_language")))
     elif not user.house:
-        return redirect(url_for(('hogwarts_house')))
+        return redirect(url_for(("hogwarts_house")))
 
     # Set a random magic item level
     magic_item_level = randint(1, 10)
