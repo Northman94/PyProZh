@@ -1,5 +1,5 @@
 lint:
-	flake8 --verbose
+	flake8 --docstring-convention --verbose
 
 py_test:
 	pytest
