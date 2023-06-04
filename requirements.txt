@@ -23,5 +23,10 @@ packaging==23.1
 pluggy==1.0.0
 pytest==7.3.1
 tomli==2.0.1
-
+# L10
 pytest-django==4.5.2
+# L11
+flake8==6.0.0
+mccabe==0.7.0
+pycodestyle==2.10.0
+pyflakes==3.0.1
