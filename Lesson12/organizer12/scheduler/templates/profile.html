@@ -6,7 +6,7 @@
 </head>
 
 <body>
-    <h1>User Profile:</h1>
+    <h1>User Profile L12:</h1>
     <br>
     <h3>Name: {{ user.name }}</h3>
     <h3>Password: {{ user.password }}</h3>
@@ -19,7 +19,7 @@
         <input type="hidden" name="username" value="{{ user.name }}">
         <input type="hidden" name="password" value="{{ user.password }}">
 
-        <input type="submit" name="action" value="Change User">
+        <input type="submit" name="action" value="Change User Info">
     </form>
 
     <form method="post">
@@ -28,6 +28,14 @@
         <input type="hidden" name="password" value="{{ user.password }}">
 
         <input type="submit" name="action" value="Delete User">
+    </form>
+
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="username" value="{{ user.name }}">
+        <input type="hidden" name="password" value="{{ user.password }}">
+
+        <input type="submit" name="action" value="Logout">
     </form>
 
     <form method="post">

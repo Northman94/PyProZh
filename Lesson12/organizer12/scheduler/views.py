@@ -5,6 +5,9 @@ from django.template import loader
 from random import randint
 from .forms import NoteForm
 from .models import MyUser, Note
+from django.contrib.auth import logout
+from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
 
 
 user = MyUser(name="", password="", language="", grade="")
@@ -43,6 +46,13 @@ def login(request):
     return render(request, "login.html")
 
 
+# Clears the user's session and removes the authentication information:
+def logout_view(request):
+    logout(request)
+    return redirect(login)
+
+
+#@login_required(login_url="login/")
 def alter_user(request):
     global user
 
@@ -84,6 +94,7 @@ def alter_user(request):
     return render(request, "alter.html", {"user": user})
 
 
+#@login_required(login_url="login/")
 def show_profile(request):
     global user
 
@@ -95,6 +106,9 @@ def show_profile(request):
             user = MyUser.objects.filter(name=user.name, password=user.password).first()
             user.delete()
             return redirect(delete_profile)
+
+        if request.POST.get("action") == "Logout":
+            return redirect(logout_view)
 
         # Create/Show NOTES page:
         if request.POST.get("action") == "NOTES":
@@ -138,6 +152,7 @@ def get_grade(level):
         return "High"
 
 
+#@login_required(login_url="login/")
 def user_notes(request):
     # Check/Update user from DB:
     person = MyUser.objects.filter(name=user.name).first()
@@ -168,6 +183,7 @@ def user_notes(request):
     return render(request, "user_notes.html", {"notes": notes, "form": form})
 
 
+#@login_required(login_url="login/")
 def show_note_details(request, note_id):
     note = get_object_or_404(Note, id=note_id)
     return render(request, "note_details.html", {"note": note})
