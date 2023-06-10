@@ -8,6 +8,7 @@ from .models import MyUser, Note
 from django.contrib.auth import logout
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
+from colorama import Fore
 
 
 user = MyUser(name="", password="", language="", grade="")
@@ -57,6 +58,7 @@ def alter_user(request):
     global user
 
     if request.method == "POST":
+        print(Fore.RED + f"POST from alter_user!!!!!!!!")
         # Info from alter HTML-Form:
         a_name = request.POST.get("username")
         a_password = request.POST.get("password")
@@ -65,9 +67,11 @@ def alter_user(request):
 
         if request.POST.get("action") == "Next":
             if check_user_in_db(a_name, a_password):
+                print(Fore.RED + f"NEXT check in DB!!!!!!!!")
+
                 # User present in DB => update fields
                 # Avoiding New Instance Creation
-                db_user = MyUser.objects.get(id=user.id)
+                db_user = MyUser.objects.filter(name=user.name, password=user.password).first()
                 db_user.name = a_name
                 db_user.password = a_password
                 db_user.language = a_language
@@ -77,9 +81,10 @@ def alter_user(request):
                 user.password = a_password
                 user.language = a_language
                 user.grade = a_grade
-
+                print(Fore.RED + f"USER SAVED!!!!!!!!")
                 db_user.save()
             else:
+                print(Fore.RED + f"NEXT NOT in DB!!!!!!!!")
                 # Create a new user
                 user.name = a_name
                 user.password = a_password
@@ -88,9 +93,11 @@ def alter_user(request):
 
                 user.save()
 
+            print(Fore.RED + f"TO SHOW PROFILE!!!!!!!!")
             return redirect(show_profile)
 
-    # RENDER ALTER
+
+    print(Fore.RED + f"RENDER ALTER !!!!!!!!!!!!!!!!!!!!")
     return render(request, "alter.html", {"user": user})
 
 
@@ -99,7 +106,7 @@ def show_profile(request):
     global user
 
     if request.method == "POST":
-        if request.POST.get("action") == "Change User":
+        if request.POST.get("action") == "Change User Info":
             return redirect(alter_user)
 
         if request.POST.get("action") == "Delete User":

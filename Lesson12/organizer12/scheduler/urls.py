@@ -14,7 +14,5 @@ urlpatterns = [
     # Admin paths:
     path("users/", views.admin_see_user, name="see_user"),
     path("users/<str:username>/", views.admin_user_info, name="user_info"),
-    path(
-        "note/<str:username>/<int:note_id>/", views.admin_user_notes, name="admin_note"
-    ),
+    path("note/<str:username>/<int:note_id>/", views.admin_user_notes, name="admin_note"),
 ]
