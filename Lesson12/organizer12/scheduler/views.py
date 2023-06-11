@@ -41,6 +41,8 @@ def login(request):
             else:
                 # Create USER partially to have filled suggestions in the next form
                 user = MyUser(name=l_name, password=l_password)
+                user_session = request.session.get("user_session")
+                request.session["user_session"] = user_session
                 return redirect(alter_user)
 
     # RENDER LOGIN
@@ -49,6 +51,8 @@ def login(request):
 
 # Clears the user's session and removes the authentication information:
 def logout_view(request):
+    if "user_session" in request.session:
+        del request.session["user_session"]
     logout(request)
     return redirect(login)
 
