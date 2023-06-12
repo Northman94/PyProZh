@@ -1,10 +1,12 @@
 # scheduler/models.py
 from django.db import models
+from django.contrib.auth.models import User
 
 
 class MyUser(models.Model):
-    name = models.CharField(max_length=100)
-    password = models.CharField(max_length=100)
+    # name = models.CharField(max_length=100)
+    # password = models.CharField(max_length=100)
+    my_user = models.ForeignKey(User, on_delete = models.CASCADE)
     language = models.CharField(max_length=100)
     grade = models.CharField(max_length=10)
 
@@ -15,7 +17,7 @@ class MyUser(models.Model):
 class Note(models.Model):
     # ForeignKey is a link to certain User in another table
     # (.CASCADE) will Delete all Obj-s with no relations
-    user_note = models.ForeignKey(MyUser, on_delete=models.CASCADE)
+    user_note = models.ForeignKey(User, on_delete=models.CASCADE)
 
     title = models.CharField(max_length=20)
     msg = models.CharField(max_length=100)

@@ -5,118 +5,115 @@ from django.template import loader
 from random import randint
 from .forms import NoteForm
 from .models import MyUser, Note
-from django.contrib.auth import logout
 from django.contrib.auth.models import User
+from django.contrib.auth import logout, authenticate, login
 from django.contrib.auth.decorators import login_required
 from colorama import Fore
 
 
-user = MyUser(name="", password="", language="", grade="")
-
-
-def login(request):
-    global user
-
+def register(request):
     if request.method == "POST":
         # Info from login HTML-Form:
         l_name = request.POST.get("username")
         l_password = request.POST.get("password")
 
-        # Log-In Button Pressed:
-        if request.POST.get("action") == "Login":
-            # User Present:
-            if check_user_in_db(l_name, l_password):
-                return redirect(show_profile)
-            else:
-                # User Absent:
-                return render(request, "login.html", {"message": "No such User."})
-
         # Register Button Pressed:
         if request.POST.get("action") == "Register":
-            # Check if user PRESENT in DB:
-            if check_user_in_db(l_name, l_password):
-                return render(
-                    request, "login.html", {"message": "Username already exists."}
-                )
-            else:
-                # Create USER partially to have filled suggestions in the next form
-                user = MyUser(name=l_name, password=l_password)
-                user_session = request.session.get("user_session")
-                request.session["user_session"] = user_session
-                return redirect(alter_user)
+            # Create USER partially to have filled suggestions in the next form
+            user = User.objects.create_user(username=l_name, password=l_password)
+            return redirect("/accounts/login/")
 
     # RENDER LOGIN
-    return render(request, "login.html")
+    return render(request, "register.html")
 
 
 # Clears the user's session and removes the authentication information:
+
+# def login(request):
+#     if request.method == "POST":
+#         # Info from login HTML-Form:
+#         l_name = request.POST.get("username")
+#         l_password = request.POST.get("password")
+#
+#         # Log-In Button Pressed:
+#         if request.POST.get("action") == "Login":
+#             user = authenticate(username=l_name, password=l_password)
+#             print(f"USER {user}!!!!!!!!!!!!!!!!!!")
+#             return redirect(show_profile)
+#         else:
+#             # User Absent:
+#             return render(request, "login.html", {"message": "No such User."})
+#
+#
+#     return render(request, "login.html")
+
+
 def logout_view(request):
-    if "user_session" in request.session:
-        del request.session["user_session"]
     logout(request)
-    return redirect(login)
+    return redirect("/accounts/login/")
+
+#@login_required(login_url="login/")
+# def alter_user(request):
+#     global user
+#
+#     if request.method == "POST":
+#         print(Fore.RED + f"POST from alter_user!!!!!!!!")
+#         # Info from alter HTML-Form:
+#         a_name = request.POST.get("username")
+#         a_password = request.POST.get("password")
+#         a_language = request.POST.get("language")
+#         a_grade = get_grade(randint(1, 10))
+#
+#         if request.POST.get("action") == "Next":
+#             if check_user_in_db(a_name, a_password):
+#                 print(Fore.RED + f"NEXT check in DB!!!!!!!!")
+#
+#                 # User present in DB => update fields
+#                 # Avoiding New Instance Creation
+#                 db_user = MyUser.objects.filter(name=user.name, password=user.password).first()
+#                 db_user.name = a_name
+#                 db_user.password = a_password
+#                 db_user.language = a_language
+#                 db_user.grade = a_grade
+#                 # Updating info for forms
+#                 user.name = a_name
+#                 user.password = a_password
+#                 user.language = a_language
+#                 user.grade = a_grade
+#                 print(Fore.RED + f"USER SAVED!!!!!!!!")
+#                 db_user.save()
+#             else:
+#                 print(Fore.RED + f"NEXT NOT in DB!!!!!!!!")
+#                 # Create a new user
+#                 user.name = a_name
+#                 user.password = a_password
+#                 user.language = a_language
+#                 user.grade = a_grade
+#
+#                 user.save()
+#
+#             print(Fore.RED + f"TO SHOW PROFILE!!!!!!!!")
+#             return redirect(show_profile)
+#
+#     print(Fore.RED + f"RENDER ALTER !!!!!!!!!!!!!!!!!!!!")
+#     return render(request, "alter.html", {"user": user})
 
 
 #@login_required(login_url="login/")
-def alter_user(request):
-    global user
 
-    if request.method == "POST":
-        print(Fore.RED + f"POST from alter_user!!!!!!!!")
-        # Info from alter HTML-Form:
-        a_name = request.POST.get("username")
-        a_password = request.POST.get("password")
-        a_language = request.POST.get("language")
-        a_grade = get_grade(randint(1, 10))
-
-        if request.POST.get("action") == "Next":
-            if check_user_in_db(a_name, a_password):
-                print(Fore.RED + f"NEXT check in DB!!!!!!!!")
-
-                # User present in DB => update fields
-                # Avoiding New Instance Creation
-                db_user = MyUser.objects.filter(name=user.name, password=user.password).first()
-                db_user.name = a_name
-                db_user.password = a_password
-                db_user.language = a_language
-                db_user.grade = a_grade
-                # Updating info for forms
-                user.name = a_name
-                user.password = a_password
-                user.language = a_language
-                user.grade = a_grade
-                print(Fore.RED + f"USER SAVED!!!!!!!!")
-                db_user.save()
-            else:
-                print(Fore.RED + f"NEXT NOT in DB!!!!!!!!")
-                # Create a new user
-                user.name = a_name
-                user.password = a_password
-                user.language = a_language
-                user.grade = a_grade
-
-                user.save()
-
-            print(Fore.RED + f"TO SHOW PROFILE!!!!!!!!")
-            return redirect(show_profile)
-
-
-    print(Fore.RED + f"RENDER ALTER !!!!!!!!!!!!!!!!!!!!")
-    return render(request, "alter.html", {"user": user})
-
-
-#@login_required(login_url="login/")
+# @login_required(login_url="/accounts/login/")
 def show_profile(request):
-    global user
+    #global user
+    print(request.user)
 
     if request.method == "POST":
-        if request.POST.get("action") == "Change User Info":
-            return redirect(alter_user)
+        # if request.POST.get("action") == "Change User Info":
+        #     return redirect(alter_user)
 
-        if request.POST.get("action") == "Delete User":
-            user = MyUser.objects.filter(name=user.name, password=user.password).first()
-            user.delete()
-            return redirect(delete_profile)
+        # if request.POST.get("action") == "Delete User":
+        #     user = MyUser.objects.filter(name=user.name, password=user.password).first()
+        #     user.delete()
+        #     return redirect(delete_profile)
 
         if request.POST.get("action") == "Logout":
             return redirect(logout_view)
@@ -126,47 +123,34 @@ def show_profile(request):
             return redirect(user_notes)
 
     # RENDER PROFILE
-    return render(request, "profile.html", {"user": user})
+    return render(request, "profile.html", {"user": request.user})
 
 
-def check_user_in_db(c_name, c_password):
-    global user
-
-    # FILTERED FIELDS FROM DB:
-    db_content = MyUser.objects.filter(name=c_name, password=c_password).first()
-
-    if db_content:
-        # Assign DB user's fields to variables:
-        user.name = db_content.name
-        user.password = db_content.password
-        user.language = db_content.language
-        user.grade = db_content.grade
-        return True
-    return False
+# def delete_profile(request):
+#     if request.method == "POST":
+#         if request.POST.get("action") == "Return to Login":
+#             return redirect(login)
+#
+#     # RENDER DELETE
+#     return render(request, "delete.html")
 
 
-def delete_profile(request):
-    if request.method == "POST":
-        if request.POST.get("action") == "Return to Login":
-            return redirect(login)
-
-    # RENDER DELETE
-    return render(request, "delete.html")
-
-
-def get_grade(level):
-    if level < 4:
-        return "Low"
-    elif level < 7:
-        return "Medium"
-    else:
-        return "High"
+# def get_grade(level):
+#     if level < 4:
+#         return "Low"
+#     elif level < 7:
+#         return "Medium"
+#     else:
+#         return "High"
 
 
 #@login_required(login_url="login/")
+
+@login_required(login_url="/accounts/login/")
 def user_notes(request):
     # Check/Update user from DB:
-    person = MyUser.objects.filter(name=user.name).first()
+    # person = MyUser.objects.filter(name=user.name).first()
+    person = request.user
     notes = Note.objects.filter(user_note=person.id)
 
     if request.method == "POST":
@@ -194,7 +178,7 @@ def user_notes(request):
     return render(request, "user_notes.html", {"notes": notes, "form": form})
 
 
-#@login_required(login_url="login/")
+@login_required(login_url="/accounts/login/")
 def show_note_details(request, note_id):
     note = get_object_or_404(Note, id=note_id)
     return render(request, "note_details.html", {"note": note})

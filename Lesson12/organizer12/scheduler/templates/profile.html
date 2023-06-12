@@ -6,44 +6,50 @@
 </head>
 
 <body>
-    <h1>User Profile L12:</h1>
-    <br>
-    <h3>Name: {{ user.name }}</h3>
-    <h3>Password: {{ user.password }}</h3>
-    <h3>Language: {{ user.language }}</h3>
-    <h3>Grade: {{ user.grade }}</h3>
+{% if user.is_authenticated %}
+
+<h1>User Profile L12:</h1>
+<br>
+<h3>Name: {{ user.username }}</h3>
+<h3>Password: {{ user.password }}</h3>
+<h3>Language: {{ user.language }}</h3>
+<h3>Grade: {{ user.grade }}</h3>
+
+{% else %}
+    <p>Please login to see this page.</p>
+{% endif %}
 
 
-    <form method="post">
-        {% csrf_token %}
-        <input type="hidden" name="username" value="{{ user.name }}">
-        <input type="hidden" name="password" value="{{ user.password }}">
+<form method="post">
+    {% csrf_token %}
+    <input type="hidden" name="username" value="{{ user.username }}">
+    <input type="hidden" name="password" value="{{ user.password }}">
 
-        <input type="submit" name="action" value="Change User Info">
-    </form>
+    <input type="submit" name="action" value="Change User Info">
+</form>
 
-    <form method="post">
-        {% csrf_token %}
-        <input type="hidden" name="username" value="{{ user.name }}">
-        <input type="hidden" name="password" value="{{ user.password }}">
+<form method="post">
+    {% csrf_token %}
+    <input type="hidden" name="username" value="{{ user.username }}">
+    <input type="hidden" name="password" value="{{ user.password }}">
 
-        <input type="submit" name="action" value="Delete User">
-    </form>
+    <input type="submit" name="action" value="Delete User">
+</form>
 
-    <form method="post">
-        {% csrf_token %}
-        <input type="hidden" name="username" value="{{ user.name }}">
-        <input type="hidden" name="password" value="{{ user.password }}">
+<form method="post">
+    {% csrf_token %}
+    <input type="hidden" name="username" value="{{ user.username }}">
+    <input type="hidden" name="password" value="{{ user.password }}">
 
-        <input type="submit" name="action" value="Logout">
-    </form>
+    <input type="submit" name="action" value="Logout">
+</form>
 
-    <form method="post">
-        {% csrf_token %}
-        <input type="hidden" name="username" value="{{ user.name }}">
-        <input type="hidden" name="password" value="{{ user.password }}">
+<form method="post">
+    {% csrf_token %}
+    <input type="hidden" name="username" value="{{ user.username }}">
+    <input type="hidden" name="password" value="{{ user.password }}">
 
-        <input type="submit" name="action" value="NOTES">
-    </form>
+    <input type="submit" name="action" value="NOTES">
+</form>
 </body>
 </html>

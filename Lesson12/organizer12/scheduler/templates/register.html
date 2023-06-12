@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Login</title>
+    <title>Register</title>
 </head>
 <body>
     {% if message %}
@@ -17,13 +17,8 @@
         <label for="password">Password:</label>
         <input type="password" id="password" name="password"><br><br>
 
-        <input type="submit" name="action" value="Login">
+
         <input type="submit" name="action" value="Register">
     </form>
-
-    <form action="/accounts/login/profile/">
-        <input type="submit" value="Anonymous" />
-    </form>
-
 </body>
 </html>
