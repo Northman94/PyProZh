@@ -5,17 +5,13 @@ from django.template import loader
 from random import randint
 from .forms import NoteForm
 from .models import MyUser, Note
-from django.contrib.auth import logout
 from django.contrib.auth.models import User
+from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from colorama import Fore
 
 
-user = MyUser(name="", password="", language="", grade="")
-
-
 def login(request):
-    global user
 
     if request.method == "POST":
         # Info from login HTML-Form:
@@ -25,7 +21,8 @@ def login(request):
         # Log-In Button Pressed:
         if request.POST.get("action") == "Login":
             # User Present:
-            if check_user_in_db(l_name, l_password):
+            if authenticate(username = l_name, password = l_password):
+                print(Fore.RED + "USER AUTHENTICATED !!!!!!!!!!!!!!!\n")
                 return redirect(show_profile)
             else:
                 # User Absent:
@@ -33,17 +30,20 @@ def login(request):
 
         # Register Button Pressed:
         if request.POST.get("action") == "Register":
-            # Check if user PRESENT in DB:
-            if check_user_in_db(l_name, l_password):
-                return render(
-                    request, "login.html", {"message": "Username already exists."}
-                )
+            # # Check if user PRESENT in DB:
+            # if check_user_in_db(l_name, l_password):
+            #     return render(
+            #         request, "login.html", {"message": "Username already exists."}
+            #     )
+            # else:
+            # Create USER partially to have filled suggestions in the next form
+            l_user = User.objects.create_user(username=l_name, password=l_password)
+
+            if l_user is not None:
+                print(f"User {l_user}")
             else:
-                # Create USER partially to have filled suggestions in the next form
-                user = MyUser(name=l_name, password=l_password)
-                user_session = request.session.get("user_session")
-                request.session["user_session"] = user_session
-                return redirect(alter_user)
+                print("???????????????????????????")
+            return redirect(alter_user)
 
     # RENDER LOGIN
     return render(request, "login.html")
@@ -51,15 +51,12 @@ def login(request):
 
 # Clears the user's session and removes the authentication information:
 def logout_view(request):
-    if "user_session" in request.session:
-        del request.session["user_session"]
     logout(request)
     return redirect(login)
 
 
-#@login_required(login_url="login/")
+# @login_required(login_url="login/")
 def alter_user(request):
-    global user
 
     if request.method == "POST":
         print(Fore.RED + f"POST from alter_user!!!!!!!!")
@@ -100,21 +97,19 @@ def alter_user(request):
             print(Fore.RED + f"TO SHOW PROFILE!!!!!!!!")
             return redirect(show_profile)
 
-
     print(Fore.RED + f"RENDER ALTER !!!!!!!!!!!!!!!!!!!!")
-    return render(request, "alter.html", {"user": user})
+    return render(request, "alter.html", {"user": request.user})
 
 
 #@login_required(login_url="login/")
 def show_profile(request):
-    global user
-
+    print(f"SHOW PROFILE !!!!!!!!!!!!!!!")
     if request.method == "POST":
         if request.POST.get("action") == "Change User Info":
             return redirect(alter_user)
 
         if request.POST.get("action") == "Delete User":
-            user = MyUser.objects.filter(name=user.name, password=user.password).first()
+            user = MyUser.objects.filter(name=User.username, password=User.password).first()
             user.delete()
             return redirect(delete_profile)
 
@@ -126,7 +121,7 @@ def show_profile(request):
             return redirect(user_notes)
 
     # RENDER PROFILE
-    return render(request, "profile.html", {"user": user})
+    return render(request, "profile.html", {"user": request.user})
 
 
 def check_user_in_db(c_name, c_password):
