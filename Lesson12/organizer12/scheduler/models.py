@@ -1,10 +1,9 @@
-# scheduler/models.py
 from django.db import models
 from django.contrib.auth.models import User
 
 
 class MyUser(models.Model):
-    my_user = models.ForeignKey(User, on_delete=models.CASCADE, default=1)  # Assuming the default user ID is 1
+    my_user = models.ForeignKey(User, on_delete=models.CASCADE, default=1, related_name='myuser')
     language = models.CharField(max_length=100)
     grade = models.CharField(max_length=10)
 

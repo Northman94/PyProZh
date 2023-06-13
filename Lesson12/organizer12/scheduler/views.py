@@ -11,8 +11,7 @@ from django.contrib.auth.decorators import login_required
 from colorama import Fore
 
 
-def login(request):
-
+def login_view(request):
     if request.method == "POST":
         # Info from login HTML-Form:
         l_name = request.POST.get("username")
@@ -21,7 +20,7 @@ def login(request):
         # Log-In Button Pressed:
         if request.POST.get("action") == "Login":
             # User Present:
-            if authenticate(username = l_name, password = l_password):
+            if authenticate(username=l_name, password=l_password):
                 print(Fore.RED + "USER AUTHENTICATED !!!!!!!!!!!!!!!\n")
                 return redirect(show_profile)
             else:
@@ -30,78 +29,51 @@ def login(request):
 
         # Register Button Pressed:
         if request.POST.get("action") == "Register":
-            # # Check if user PRESENT in DB:
-            # if check_user_in_db(l_name, l_password):
-            #     return render(
-            #         request, "login.html", {"message": "Username already exists."}
-            #     )
-            # else:
-            # Create USER partially to have filled suggestions in the next form
-            l_user = User.objects.create_user(username=l_name, password=l_password)
-
-            if l_user is not None:
-                print(f"User {l_user}")
+            # Check if user is PRESENT in DB:
+            if User.objects.filter(username=l_name).exists():
+                return render(
+                    request, "login.html", {"message": "Username already exists."}
+                )
             else:
-                print("???????????????????????????")
-            return redirect(alter_user)
+                # Create USER partially to have filled suggestions in the next form
+                l_user = User.objects.create_user(username=l_name, password=l_password)
+                return redirect(alter_user)
+
 
     # RENDER LOGIN
     return render(request, "login.html")
 
 
-# Clears the user's session and removes the authentication information:
-def logout_view(request):
-    logout(request)
-    return redirect(login)
-
-
-# @login_required(login_url="login/")
 def alter_user(request):
-
     if request.method == "POST":
-        print(Fore.RED + f"POST from alter_user!!!!!!!!")
-        # Info from alter HTML-Form:
-        a_name = request.POST.get("username")
+        a_username = request.POST.get("username")
         a_password = request.POST.get("password")
         a_language = request.POST.get("language")
         a_grade = get_grade(randint(1, 10))
 
         if request.POST.get("action") == "Next":
-            if check_user_in_db(a_name, a_password):
-                print(Fore.RED + f"NEXT check in DB!!!!!!!!")
+            a_user = User.objects.get(username=a_username)
 
-                # User present in DB => update fields
-                # Avoiding New Instance Creation
-                db_user = MyUser.objects.filter(name=user.name, password=user.password).first()
-                db_user.name = a_name
-                db_user.password = a_password
-                db_user.language = a_language
-                db_user.grade = a_grade
-                # Updating info for forms
-                user.name = a_name
-                user.password = a_password
-                user.language = a_language
-                user.grade = a_grade
-                print(Fore.RED + f"USER SAVED!!!!!!!!")
-                db_user.save()
-            else:
-                print(Fore.RED + f"NEXT NOT in DB!!!!!!!!")
-                # Create a new user
-                user.name = a_name
-                user.password = a_password
-                user.language = a_language
-                user.grade = a_grade
+            # Update user's password
+            a_user.set_password(a_password)
+            a_user.save()
 
-                user.save()
+            # Get or create MyUser instance
+            my_user, _ = MyUser.objects.get_or_create(my_user=a_user)
+            my_user.language = a_language
+            my_user.grade = a_grade
+            my_user.save()
 
-            print(Fore.RED + f"TO SHOW PROFILE!!!!!!!!")
+            print("USER UPDATED/CREATED !!!!!!!!!!!!")
             return redirect(show_profile)
 
-    print(Fore.RED + f"RENDER ALTER !!!!!!!!!!!!!!!!!!!!")
     return render(request, "alter.html", {"user": request.user})
 
 
-#@login_required(login_url="login/")
+
+
+
+
 def show_profile(request):
     print(f"SHOW PROFILE !!!!!!!!!!!!!!!")
     if request.method == "POST":
@@ -109,7 +81,7 @@ def show_profile(request):
             return redirect(alter_user)
 
         if request.POST.get("action") == "Delete User":
-            user = MyUser.objects.filter(name=User.username, password=User.password).first()
+            user = User.objects.get(username=request.user.username)
             user.delete()
             return redirect(delete_profile)
 
@@ -124,26 +96,10 @@ def show_profile(request):
     return render(request, "profile.html", {"user": request.user})
 
 
-def check_user_in_db(c_name, c_password):
-    global user
-
-    # FILTERED FIELDS FROM DB:
-    db_content = MyUser.objects.filter(name=c_name, password=c_password).first()
-
-    if db_content:
-        # Assign DB user's fields to variables:
-        user.name = db_content.name
-        user.password = db_content.password
-        user.language = db_content.language
-        user.grade = db_content.grade
-        return True
-    return False
-
-
 def delete_profile(request):
     if request.method == "POST":
         if request.POST.get("action") == "Return to Login":
-            return redirect(login)
+            return redirect(login_view)
 
     # RENDER DELETE
     return render(request, "delete.html")
@@ -158,11 +114,10 @@ def get_grade(level):
         return "High"
 
 
-#@login_required(login_url="login/")
 def user_notes(request):
     # Check/Update user from DB:
-    person = MyUser.objects.filter(name=user.name).first()
-    notes = Note.objects.filter(user_note=person.id)
+    person = MyUser.objects.get(my_user=request.user)
+    notes = Note.objects.filter(user_note=person)
 
     if request.method == "POST":
         form = NoteForm(request.POST)
@@ -189,7 +144,6 @@ def user_notes(request):
     return render(request, "user_notes.html", {"notes": notes, "form": form})
 
 
-#@login_required(login_url="login/")
 def show_note_details(request, note_id):
     note = get_object_or_404(Note, id=note_id)
     return render(request, "note_details.html", {"note": note})
@@ -204,9 +158,9 @@ def admin_see_user(request):
 
 
 # path('users/<str:username>/'...
-# "username" parameter is passed from path of "scheduler/urls.py" file
+# "username" parameter is passed from the path of "scheduler/urls.py" file
 def admin_user_info(request, username):
-    admin_usr = get_object_or_404(MyUser, name=username)
+    admin_usr = get_object_or_404(MyUser, my_user__username=username)
     notes = Note.objects.filter(user_note=admin_usr)
 
     return render(
@@ -223,7 +177,12 @@ def admin_user_info(request, username):
 
 # path('note/<str:username>/<int:note_id>/'...
 def admin_user_notes(request, username, note_id):
-    note = get_object_or_404(Note, id=note_id, user_note__name=username)
+    note = get_object_or_404(Note, id=note_id, user_note__my_user__username=username)
     return render(
         request, "admin_user_notes.html", {"note": note, "username": username}
     )
+
+
+def logout_view(request):
+    logout(request)
+    return redirect(login_view)
