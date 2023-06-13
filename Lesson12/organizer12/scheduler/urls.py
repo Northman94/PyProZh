@@ -5,9 +5,11 @@ from django.contrib.auth import views as auth_views
 
 
 urlpatterns = [
-    path("accounts/login/", auth_views.LoginView.as_view(template_name="login.html")),
-    path("accounts/login/profile/", views.show_profile, name="show_profile"),
+    path("", auth_views.LoginView.as_view(template_name="login.html")),
+    path("login/", auth_views.LoginView.as_view(template_name="login.html")),
+
     path("register/", views.register, name = "register_profile"),
+    path("profile/", views.show_profile, name="show_profile"),
 
     #path("alter/", views.alter_user, name="alter_user"),
     #path("delete/", views.delete_profile, name="delete_profile"),

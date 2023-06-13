@@ -27,27 +27,9 @@ def register(request):
     return render(request, "register.html")
 
 
+
+
 # Clears the user's session and removes the authentication information:
-
-# def login(request):
-#     if request.method == "POST":
-#         # Info from login HTML-Form:
-#         l_name = request.POST.get("username")
-#         l_password = request.POST.get("password")
-#
-#         # Log-In Button Pressed:
-#         if request.POST.get("action") == "Login":
-#             user = authenticate(username=l_name, password=l_password)
-#             print(f"USER {user}!!!!!!!!!!!!!!!!!!")
-#             return redirect(show_profile)
-#         else:
-#             # User Absent:
-#             return render(request, "login.html", {"message": "No such User."})
-#
-#
-#     return render(request, "login.html")
-
-
 def logout_view(request):
     logout(request)
     return redirect("/accounts/login/")
