@@ -131,8 +131,8 @@ def get_grade(level):
 
 def user_notes(request):
     # Check/Update user from DB:
-    person = MyUser.objects.get(my_user=request.user)
-    notes = Note.objects.filter(user_note=person)
+    # person = MyUser.objects.get(user_id=request.user.id)
+    notes = Note.objects.filter(user_note_id=request.user.id)
 
     if request.method == "POST":
         form = NoteForm(request.POST)
@@ -143,7 +143,7 @@ def user_notes(request):
             new_note_e_mail = form.cleaned_data["e_mail"]
 
             Note.objects.create(
-                user_note=person,
+                user_note=User.objects.filter(id=request.user.id).first(),
                 title=new_note_title,
                 msg=new_note_msg,
                 assignee=new_note_assignee,
