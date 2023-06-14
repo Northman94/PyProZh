@@ -12,6 +12,10 @@ from colorama import Fore
 
 
 def login_view(request):
+    # Default values for l_name and l_password
+    l_name = ""
+    l_password = ""
+
     if request.method == "POST":
         # Info from login HTML-Form:
         l_name = request.POST.get("username")
@@ -19,10 +23,14 @@ def login_view(request):
 
         # Log-In Button Pressed:
         if request.POST.get("action") == "Login":
-            # User Present:
-            if authenticate(username=l_name, password=l_password):
-                print(Fore.RED + "USER AUTHENTICATED !!!!!!!!!!!!!!!\n")
-                return redirect(show_profile)
+            # Checks in DB. Returns authenticated User.
+            auth = authenticate(username=l_name, password=l_password)
+            if auth is not None:
+                # Log in the user
+                login(request, auth)
+                print("USER AUTHENTICATED !!!!!!!!!!!!!!!\n")
+                return redirect(show_profile, p_name=l_name, p_password=l_password)
+
             else:
                 # User Absent:
                 return render(request, "login.html", {"message": "No such User."})
@@ -31,20 +39,17 @@ def login_view(request):
         if request.POST.get("action") == "Register":
             # Check if user is PRESENT in DB:
             if User.objects.filter(username=l_name).exists():
-                return render(
-                    request, "login.html", {"message": "Username already exists."}
-                )
+                return render(request, "login.html", {"message": "Username already exists."})
             else:
                 # Create USER partially to have filled suggestions in the next form
                 l_user = User.objects.create_user(username=l_name, password=l_password)
-                return redirect(alter_user)
-
+                return redirect(alter_user, a_name=l_name, a_password=l_password)
 
     # RENDER LOGIN
     return render(request, "login.html")
 
 
-def alter_user(request):
+def alter_user(request, a_name, a_password):
     if request.method == "POST":
         a_username = request.POST.get("username")
         a_password = request.POST.get("password")
@@ -67,21 +72,23 @@ def alter_user(request):
             print("USER UPDATED/CREATED !!!!!!!!!!!!")
             return redirect(show_profile)
 
-    return render(request, "alter.html", {"user": request.user})
+    context = {
+        "user": request.user,
+        "name": a_name,
+        "password": a_password,
+    }
+
+    return render(request, "alter.html", context)
 
 
-
-
-
-
-def show_profile(request):
+def show_profile(request, p_name, p_password):
     print(f"SHOW PROFILE !!!!!!!!!!!!!!!")
     if request.method == "POST":
         if request.POST.get("action") == "Change User Info":
-            return redirect(alter_user)
+            return redirect(alter_user, p_name, p_password)
 
         if request.POST.get("action") == "Delete User":
-            user = User.objects.get(username=request.user.username)
+            user = User.objects.filter(username = p_name, password = p_password).first()
             user.delete()
             return redirect(delete_profile)
 
@@ -92,8 +99,14 @@ def show_profile(request):
         if request.POST.get("action") == "NOTES":
             return redirect(user_notes)
 
+    context = {
+        "user": request.user,
+        "username": p_name,
+        "password": p_password,
+    }
+
     # RENDER PROFILE
-    return render(request, "profile.html", {"user": request.user})
+    return render(request, "profile.html", context)
 
 
 def delete_profile(request):

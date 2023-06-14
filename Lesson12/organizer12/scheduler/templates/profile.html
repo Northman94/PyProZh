@@ -8,40 +8,40 @@
 <body>
     <h1>User Profile L12:</h1>
     <br>
-    <h3>Name: {{ user.username }}</h3>
-    <h3>Password: {{ user.password }}</h3>
-    <h3>Language: {{ user.language }}</h3>
-    <h3>Grade: {{ user.grade }}</h3>
+    <h3>Name: {{ username }}</h3>
+    <h3>Password: {{ password }}</h3>
+    <h3>Language: {{ user.my_user.language }}</h3>
+    <h3>Grade: {{ user.my_user.grade }}</h3>
 
 
     <form method="post">
         {% csrf_token %}
-        <input type="hidden" name="username" value="{{ user.username }}">
-        <input type="hidden" name="password" value="{{ user.password }}">
+        <input type="hidden" name="username" value="{{ username }}">
+        <input type="hidden" name="password" value="{{ password }}">
 
         <input type="submit" name="action" value="Change User Info">
     </form>
 
     <form method="post">
         {% csrf_token %}
-        <input type="hidden" name="username" value="{{ user.username }}">
-        <input type="hidden" name="password" value="{{ user.password }}">
+        <input type="hidden" name="username" value="{{ username }}">
+        <input type="hidden" name="password" value="{{ password }}">
 
         <input type="submit" name="action" value="Delete User">
     </form>
 
     <form method="post">
         {% csrf_token %}
-        <input type="hidden" name="username" value="{{ user.username }}">
-        <input type="hidden" name="password" value="{{ user.password }}">
+        <input type="hidden" name="username" value="{{ username }}">
+        <input type="hidden" name="password" value="{{ password }}">
 
         <input type="submit" name="action" value="Logout">
     </form>
 
     <form method="post">
         {% csrf_token %}
-        <input type="hidden" name="username" value="{{ user.username }}">
-        <input type="hidden" name="password" value="{{ user.password }}">
+        <input type="hidden" name="username" value="{{ username }}">
+        <input type="hidden" name="password" value="{{ password }}">
 
         <input type="submit" name="action" value="NOTES">
     </form>

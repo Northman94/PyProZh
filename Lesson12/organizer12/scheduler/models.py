@@ -8,7 +8,7 @@ class MyUser(models.Model):
     grade = models.CharField(max_length=10)
 
     def __str__(self):
-        return self.name
+        return self.my_user.username
 
 
 class Note(models.Model):
