@@ -3,12 +3,12 @@ from django.contrib.auth.models import User
 
 
 class MyUser(models.Model):
-    my_user = models.ForeignKey(User, on_delete=models.CASCADE, default=1, related_name='myuser')
+    user = models.OneToOneField(User, on_delete=models.CASCADE, default=1, related_name='my_user')
     language = models.CharField(max_length=100)
     grade = models.CharField(max_length=10)
 
-    def __str__(self):
-        return self.my_user.username
+    # def __str__(self):
+    #     return self.my_user.username
 
 
 class Note(models.Model):

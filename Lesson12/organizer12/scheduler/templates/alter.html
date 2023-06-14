@@ -7,9 +7,10 @@
     <h3>Name: {{ username }}</h3>
     <h3>Password: {{ password }}</h3>
     <h3>Language: {{ user.myuser.language }}</h3>
+    <h3>Grade: {{ user.my_user.grade }}</h3>
 
     <h1>You can set / change User:</h1>
-    <form method="POST" action="{% url 'alter_user' %}">
+    <form method="POST" action="{% url 'alter_user' user_id=user_id %}">
         {% csrf_token %}
         <label for="username">Name:</label>
         <input type="text" name="username" id="username" placeholder="Enter name"><br><br>

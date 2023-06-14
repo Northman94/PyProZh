@@ -29,7 +29,8 @@ def login_view(request):
                 # Log in the user
                 login(request, auth)
                 print("USER AUTHENTICATED !!!!!!!!!!!!!!!\n")
-                return redirect(show_profile, p_name=l_name, p_password=l_password)
+                user = User.objects.filter(username=l_name).first()
+                return redirect(show_profile, user_id=user.id)
 
             else:
                 # User Absent:
@@ -40,16 +41,15 @@ def login_view(request):
             # Check if user is PRESENT in DB:
             if User.objects.filter(username=l_name).exists():
                 return render(request, "login.html", {"message": "Username already exists."})
-            else:
-                # Create USER partially to have filled suggestions in the next form
-                l_user = User.objects.create_user(username=l_name, password=l_password)
-                return redirect(alter_user, a_name=l_name, a_password=l_password)
+
+            user = User.objects.create_user(username=l_name, password=l_password)
+            return redirect(alter_user, user_id=user.id)
 
     # RENDER LOGIN
     return render(request, "login.html")
 
 
-def alter_user(request, a_name, a_password):
+def alter_user(request, user_id):
     if request.method == "POST":
         a_username = request.POST.get("username")
         a_password = request.POST.get("password")
@@ -57,38 +57,41 @@ def alter_user(request, a_name, a_password):
         a_grade = get_grade(randint(1, 10))
 
         if request.POST.get("action") == "Next":
-            a_user = User.objects.get(username=a_username)
+            user = User.objects.filter(id=user_id).first()
 
             # Update user's password
-            a_user.set_password(a_password)
-            a_user.save()
-
+            user.set_password(a_password)
+            user.username = a_username
+            user.save()
             # Get or create MyUser instance
-            my_user, _ = MyUser.objects.get_or_create(my_user=a_user)
+            my_user, _ = MyUser.objects.get_or_create(user_id=user_id)
             my_user.language = a_language
             my_user.grade = a_grade
             my_user.save()
 
             print("USER UPDATED/CREATED !!!!!!!!!!!!")
-            return redirect(show_profile)
+            return redirect(show_profile, user_id)
 
+    user = User.objects.filter(id=user_id).first()
     context = {
-        "user": request.user,
-        "username": a_name,
-        "password": a_password,
+        # "user": request.user,
+        "username": user.username,
+        "password": user.password,
+        "user_id": user.id,
     }
     # RENDER ALTER
     return render(request, "alter.html", context)
 
 
-def show_profile(request, p_name, p_password):
+@login_required
+def show_profile(request, user_id):
+    user = User.objects.filter(id=user_id).first()
     print(f"SHOW PROFILE !!!!!!!!!!!!!!!")
     if request.method == "POST":
         if request.POST.get("action") == "Change User Info":
-            return redirect(alter_user, p_name, p_password)
+            return redirect(alter_user, user_id=user.id)
 
         if request.POST.get("action") == "Delete User":
-            user = User.objects.filter(username = p_name, password = p_password).first()
             user.delete()
             return redirect(delete_profile)
 
@@ -101,8 +104,8 @@ def show_profile(request, p_name, p_password):
 
     context = {
         "user": request.user,
-        "username": p_name,
-        "password": p_password,
+        "username": user.username,
+        "password": user.password,
     }
     # RENDER PROFILE
     return render(request, "profile.html", context)
