@@ -74,10 +74,10 @@ def alter_user(request, a_name, a_password):
 
     context = {
         "user": request.user,
-        "name": a_name,
+        "username": a_name,
         "password": a_password,
     }
-
+    # RENDER ALTER
     return render(request, "alter.html", context)
 
 
@@ -104,7 +104,6 @@ def show_profile(request, p_name, p_password):
         "username": p_name,
         "password": p_password,
     }
-
     # RENDER PROFILE
     return render(request, "profile.html", context)
 
